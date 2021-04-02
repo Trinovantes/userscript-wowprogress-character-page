@@ -1,67 +1,54 @@
-import { Regions } from './Constants'
-import Vue from 'vue'
+import { createApp } from 'vue'
+import { Region, TAG } from '@/Constants'
+import { createRootStore, key, RootState } from './store'
+import { Store } from 'vuex'
 
 export default class CharacterPage {
-    components: Array<typeof Vue>
-    region: Regions
-    realm: string
-    name: string
+    static idx = 0
+
+    store: Store<RootState>
 
     constructor() {
-        console.info('Initializing CharacterPage')
-
-        this.components = []
-        this.region = Regions.Unknown
-        this.realm = ''
-        this.name = ''
-    }
-
-    parse(): void {
-        console.info('Parsing page')
+        console.info(TAG, 'CharacterPage::parse()')
 
         const href = $('a.armoryLink').attr('href')
         if (!href) {
-            console.warn('Failed to parse page')
-            return
+            throw new Error('Failed to parse page')
         }
 
         const fragments = href.split('/')
-        const l = fragments.length
-        this.name = decodeURIComponent(fragments[l - 1])
-        this.realm = decodeURIComponent(fragments[l - 2]).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        const len = fragments.length
+        const characterName = decodeURIComponent(fragments[len - 1])
+        const realm = decodeURIComponent(fragments[len - 2]).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 
-        const locale = fragments[l - 4]
+        let region: Region
+        const locale = fragments[len - 4]
         switch (locale) {
             case 'en-us': {
-                this.region = Regions.US
+                region = 'us'
                 break
             }
             case 'en-gb': {
-                this.region = Regions.EU
+                region = 'eu'
                 break
             }
+            default: {
+                console.warn(TAG, 'Unknown locale', locale)
+                region = 'unknown'
+            }
         }
+
+        console.info(TAG, 'CharacterPage::parsed()', `region:${region} realm:${realm} name:${characterName}`)
+        this.store = createRootStore(region, realm, characterName)
     }
 
-    registerComponent(component: typeof Vue): void {
-        this.components.push(component)
-    }
-
-    render(): void {
-        console.info('Rendering page')
+    render<IComponentType>(component: IComponentType): void {
         const $profile = $('.registeredTo')
 
-        for (const [idx, Component] of Object.entries(this.components)) {
-            const component = new Component({
-                propsData: {
-                    region: this.region,
-                    realm: this.realm,
-                    name: this.name,
-                },
-            })
+        const app = createApp(component)
+        app.use(this.store, key)
 
-            $profile.before(`<div id="app-${idx}" />`)
-            component.$mount(`#app-${idx}`)
-        }
+        $profile.before(`<div id="app-${CharacterPage.idx}" />`)
+        app.mount(`#app-${CharacterPage.idx}`)
     }
 }

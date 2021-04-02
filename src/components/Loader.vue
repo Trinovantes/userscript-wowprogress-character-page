@@ -1,28 +1,23 @@
 <template>
-    <div v-if="show" class="loader">
+    <div class="loader">
         Loading
     </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
+import { defineComponent } from 'vue'
 
-@Component
-export default class Loader extends Vue {
-    @Prop({ type: Boolean, default: false }) readonly show!: boolean
-}
+export default defineComponent({
+    // nop
+})
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .loader {
     border-radius: 50%;
     width: 4em;
     height: 4em;
-}
 
-.loader {
     border: 1em solid rgba(white, 0.2);
     border-left-color: white;
     margin: $margin auto;
@@ -48,5 +43,4 @@ export default class Loader extends Vue {
         transform: rotate(360deg);
     }
 }
-
 </style>

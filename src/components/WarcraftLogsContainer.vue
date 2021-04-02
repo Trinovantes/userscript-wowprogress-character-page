@@ -1,263 +1,120 @@
 <template>
-    <div class="data-source">
+    <div class="warcraftlogs">
         <h1>
             <a
-                v-if="rankings"
-                :href="`https://www.warcraftlogs.com/character/id/${rankings.canonicalID}`"
+                :href="`https://www.warcraftlogs.com/character/${region}/${realm}/${characterName}`"
                 target="_blank"
-                class="link"
             >
+                <img src="@/assets/img/links/warcraftlogs.png">
                 Warcraft Logs
-                <img src="@img/links/warcraftlogs.png" alt="Link">
             </a>
-            <span v-else>
-                Warcraft Logs
-            </span>
         </h1>
 
-        <Loader :show="loading" />
-
-        <span
+        <div
             v-if="errorMessage"
-            class="error"
+            class="notice error"
         >
             {{ errorMessage }}
-        </span>
-
-        <form
-            v-if="!loading && !client.accessToken"
-            @submit="onSubmitClientCredentials"
-        >
-            <span class="warning">
-                You need to <a href="https://www.warcraftlogs.com/api/clients/" target="_blank">register</a> a Warcraft Logs v2 API key
-            </span>
-            <label>
-                <span>Client Id</span>
-                <input
-                    v-model="client.clientId"
-                    type="text"
-                    @input="onInputChanged"
-                >
-            </label>
-            <label>
-                <span>Client Secret</span>
-                <input
-                    v-model="client.clientSecret"
-                    type="text"
-                    @input="onInputChanged"
-                >
-            </label>
-            <button type="submit">
-                Set Up
-            </button>
-        </form>
-
-        <div v-if="!loading && rankings">
-            <div class="btn-group">
-                <a
-                    :class="`btn ${metricFilter === Metrics.DPS ? 'active' : ''}`"
-                    @click="metricFilter = Metrics.DPS"
-                >
-                    DPS
-                </a>
-                <a
-                    :class="`btn ${metricFilter === Metrics.HPS ? 'active' : ''}`"
-                    @click="metricFilter = Metrics.HPS"
-                >
-                    HPS
-                </a>
-            </div>
-            <div class="btn-group">
-                <a
-                    :class="`btn ${specFilter === '' ? 'active' : ''}`"
-                    @click="specFilter = ''"
-                >
-                    All Specs
-                </a>
-                <a
-                    v-for="spec of Specs[Object.values(Classes)[rankings.classID]]"
-                    :key="spec.name"
-                    :class="`btn ${specFilter === spec.name ? 'active' : ''}`"
-                    @click="specFilter = spec.name"
-                >
-                    {{ spec.name }}
-                </a>
-            </div>
-            <div
-                v-for="[tierKey, tierRank] of Object.entries(getCurrentRankings())"
-                :key="tierKey"
-                class="raid"
-            >
-                <WarcraftLogsRaidRankings
-                    :class-i-d="rankings.classID"
-                    :tier-key="tierKey"
-                    :tier-rank="tierRank"
-                />
-            </div>
         </div>
+
+        <Loader
+            v-if="isLoading"
+        />
+
+        <WarcraftLogsAuth
+            v-if="!accessToken"
+        />
+        <WarcraftLogsRaidRankings
+            v-else
+        />
+
+        <a
+            v-if="accessToken"
+            class="btn"
+            @click="resetApi"
+        >
+            Reset API
+        </a>
     </div>
 </template>
 
 <script lang="ts">
-import Component from 'vue-class-component'
-import { Prop, Watch } from 'vue-property-decorator'
-import Vue from 'vue'
-
-import { Classes, CurrentTiers, Metrics, Regions, Specs, Tiers } from '../Constants'
-import WarcraftLogs, { ICharacterRankings } from '@models/WarcraftLogs'
-
+import { mapState } from 'vuex'
+import { computed, defineComponent } from 'vue'
 import Loader from './Loader.vue'
+import WarcraftLogsAuth from './WarcraftLogsAuth.vue'
 import WarcraftLogsRaidRankings from './WarcraftLogsRaidRankings.vue'
+import { useTypedStore } from '@/store'
 
-@Component({
+export default defineComponent({
     components: {
-        Loader: Loader,
-        WarcraftLogsRaidRankings: WarcraftLogsRaidRankings,
+        Loader,
+        WarcraftLogsAuth,
+        WarcraftLogsRaidRankings,
     },
+
+    setup() {
+        const store = useTypedStore()
+
+        const isLoading = computed(() => store.state.isLoading)
+
+        const resetApi = async() => {
+            await store.dispatch('reset')
+        }
+
+        return {
+            isLoading,
+            resetApi,
+        }
+    },
+
+    computed: mapState([
+        'errorMessage',
+        'region',
+        'realm',
+        'characterName',
+        'accessToken',
+    ]),
 })
-export default class WarcraftLogsContainer extends Vue {
-    @Prop({ type: String, required: true }) readonly region!: Regions
-    @Prop({ type: String, required: true }) readonly realm!: string
-    @Prop({ type: String, required: true }) readonly name!: string
-
-    Metrics = Metrics
-    Classes = Classes
-    Specs = Specs
-
-    client = new WarcraftLogs()
-
-    metricFilter: Metrics = Metrics.Default
-    specFilter: string = ''
-    rankings: ICharacterRankings | null = null
-    loading = false
-    errorMessage = ''
-
-    created(): void {
-        void this.client.load()
-    }
-
-    async onInputChanged(): Promise<void> {
-        await this.client.save()
-    }
-
-    // eslint-disable-next-line no-undef
-    async onSubmitClientCredentials(event: SubmitEvent): Promise<void> {
-        event.preventDefault()
-
-        try {
-            this.errorMessage = ''
-            this.loading = true
-
-            await this.client.authenticate()
-        } catch (e) {
-            const errorMessage = e as string
-            console.warn(errorMessage)
-            this.errorMessage = errorMessage
-            await this.client.reset()
-        } finally {
-            this.loading = false
-        }
-    }
-
-    private async fetch(): Promise<void> {
-        try {
-            this.errorMessage = ''
-            this.loading = true
-
-            this.rankings = await this.client.fetchInfo(this.region, this.realm, this.name, {
-                metric: this.metricFilter,
-                specName: this.specFilter,
-            })
-
-            if (!this.rankings) {
-                this.errorMessage = 'Failed to find character on Warcraft Logs'
-            }
-        } catch (e) {
-            const errorMessage = e as string
-            console.warn(errorMessage)
-            this.errorMessage = errorMessage
-            await this.client.reset()
-        } finally {
-            this.loading = false
-        }
-    }
-
-    @Watch('client.accessToken')
-    async onAccessTokenChange(accessToken: string): Promise<void> {
-        if (!accessToken) {
-            return
-        }
-
-        await this.fetch()
-    }
-
-    @Watch('metricFilter')
-    async onChangeMetric(metric: Metrics, oldMetric: Metrics): Promise<void> {
-        if (metric === oldMetric || oldMetric === Metrics.Default) {
-            return
-        }
-
-        await this.fetch()
-    }
-
-    @Watch('specFilter')
-    async onChangeSpec(specName: string, oldSpecName: string): Promise<void> {
-        if (specName === oldSpecName) {
-            return
-        }
-
-        await this.fetch()
-    }
-
-    @Watch('rankings')
-    updateMetricFilter(rankings: ICharacterRankings | null, oldRankings: ICharacterRankings | null): void {
-        if (!rankings || rankings === oldRankings) {
-            return
-        }
-
-        for (const [tierKey, tierRank] of Object.entries(rankings)) {
-            if (Object.values(CurrentTiers).indexOf(tierKey as Tiers) === -1) {
-                continue
-            }
-
-            // Assuming all zones use same metric so we only need to return the metric of the first zone
-            this.metricFilter = tierRank?.metric || Metrics.Default
-            return
-        }
-    }
-
-    getCurrentRankings(): ICharacterRankings {
-        if (!this.rankings) {
-            return {}
-        }
-
-        const currentRankings: ICharacterRankings = {}
-        for (const [tierKey, tierRank] of Object.entries(this.rankings)) {
-            if (Object.values(CurrentTiers).indexOf(tierKey as Tiers) === -1) {
-                continue
-            }
-
-            currentRankings[tierKey as Tiers] = tierRank
-        }
-
-        return currentRankings
-    }
-}
 </script>
 
-<style lang="scss" scoped>
-.data-source {
+<style lang="scss">
+.warcraftlogs{
     border: $border;
     padding: $margin;
 
+    h1,
+    h2,
+    p,
+    ul,
+    form,
+    label,
+    .btn,
+    .notice,
+    .btn-group,
+    .raid-ranking{
+        margin: $margin 0;
+
+        &:first-child{
+            margin-top: 0;
+        }
+        &:last-child{
+            margin-bottom: 0;
+        }
+    }
+
     h1{
         margin: 0;
-        margin-bottom: 1em;
+        margin: $margin 0;
         line-height: $margin * 2;
 
-        a.link{
+        a{
             display: block;
             overflow: hidden;
+
+            &:hover{
+                text-decoration: none;
+            }
 
             img{
                 display: block;
@@ -269,55 +126,63 @@ export default class WarcraftLogsContainer extends Vue {
         }
     }
 
-    span.warning,
-    span.error {
+    .notice{
+        color: white;
         display: block;
-        margin: 10px 0;
+        padding: $margin;
+
+        &.warning{
+            background: black;
+        }
+        &.error{
+            background: #300a0e;
+        }
     }
 
     form{
         label{
-            display: flex;
-
-            span{
-                display: inline-block;
-                flex: 0.2;
-            }
+            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr 5fr;
 
             input{
-                flex: 1;
+                padding: ($margin / 2)
             }
         }
+    }
 
-        button{
-            cursor: pointer;
-            padding: $padding;
+    .btn{
+        background: #333;
+        border: $border;
+        color: white;
+        cursor: pointer;
+        display: block;
+        padding: ($margin / 2) $margin;
+        transition: 0.25s;
+
+        &:hover{
+            background: #222;
+        }
+
+        &.active{
+            border-color: white;
+            background: #111;
         }
     }
 
     .btn-group{
-        margin-bottom: $margin / 2;
-        overflow: hidden;
+        display: flex;
+        gap: $margin;
 
         a.btn{
-            background: #333;
-            border: $border;
-            cursor: pointer;
-            display: block;
-            float: left;
-            padding: $padding;
-
-            &.active{
-                border-color: white;
-                background: rgba(black, 0.25);
-            }
+            flex: 1;
+            margin: 0;
         }
     }
 
     .raid{
         border: $border;
         padding: $margin;
-        margin-top: $margin / 2;
 
         h2{
             margin: 0;

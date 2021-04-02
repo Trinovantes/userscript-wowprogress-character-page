@@ -1,44 +1,43 @@
-'use strict'
+import path from 'path'
+import webpack from 'webpack'
+import WebpackUserscript from 'webpack-userscript'
+import { VueLoaderPlugin } from 'vue-loader'
+import packageJson from './package.json'
+import url from 'url'
+import { EOL } from 'os'
 
-const { EOL } = require('os')
-const path = require('path')
-const { format } = require('url')
-const WebpackUserscript = require('webpack-userscript')
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
-const packageJson = require('./package.json')
-
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = (process.env.NODE_ENV === 'development')
+const srcDir = path.resolve(__dirname, 'src')
+const baseUrl = url.pathToFileURL(path.resolve(__dirname, 'dist')).href
 
 if (isDev) {
-    const url = format({
-        pathname: path.resolve(__dirname, 'dist', `${packageJson.name}.user.js`),
-        protocol: 'file',
-        slashes: true,
-    })
-
     let msg = ''
-    const log = (s) => msg += (s || '') + EOL
+    const log = (s?: string) => {
+        msg += (s ?? '') + EOL
+    }
 
     log('-'.repeat(80))
     log()
     log('Development Notes:')
     log()
-    log(`1. Install http://localhost:8080/${packageJson.name}.meta.js`)
-    log('2. Go into Chrome -> Extensions -> TamperMonkey -> Enable "Allow access to file URLs"')
-    log('3. Add this line to UserScript config:')
-    log()
-    log(`// @require ${url}`)
+    log('1. Go into Chrome -> Extensions -> TamperMonkey -> Enable "Allow access to file URLs"')
+    log(`2. Install http://localhost:8080/${packageJson.name}.proxy.user.js`)
     log()
     log('-'.repeat(80))
 
     console.info(msg)
 }
 
-const Config = {
+const Config: webpack.Configuration = {
     target: 'web',
 
-    mode: process.env.NODE_ENV,
-    devtool: 'inline-source-map',
+    mode: isDev
+        ? 'development'
+        : 'production',
+    devtool: isDev
+        ? 'inline-source-map'
+        : false,
+
     entry: path.resolve(__dirname, './src/index.ts'),
     output: {
         filename: `${packageJson.name}.user.js`,
@@ -47,13 +46,7 @@ const Config = {
     resolve: {
         extensions: ['.ts', '.js', '.vue'],
         alias: {
-            'vue$': isDev
-                ? 'vue/dist/vue.js'
-                : 'vue/dist/vue.min.js',
-            '@Constants': path.resolve(__dirname, './src/Constants.ts'),
-            '@models': path.resolve(__dirname, './src/models'),
-            '@img': path.resolve(__dirname, './src/assets/img'),
-            '@css': path.resolve(__dirname, './src/assets/css'),
+            '@': path.resolve(srcDir),
         },
         modules: [
             path.resolve(__dirname, './src'),
@@ -92,24 +85,19 @@ const Config = {
                     {
                         loader: 'sass-loader',
                         options: {
-                            additionalData: '@import "@css/variables.scss";',
+                            additionalData: '@import "@/assets/css/variables.scss";',
                         },
                     },
                 ],
             },
             {
                 test: /\.(png|jpg|gif)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            // To avoid any issues related to asar, embed any image up to 10MB as data url
-                            limit: 10 * 1024 * 1024,
-                            name: 'imgs/[name]--[folder].[ext]',
-                            esModule: false,
-                        },
+                use: {
+                    loader: 'url-loader',
+                    options: {
+                        esModule: false,
                     },
-                ],
+                },
             },
         ],
     },
@@ -135,18 +123,19 @@ const Config = {
                 ],
                 grant: [
                     'GM.xmlHttpRequest',
-                    'GM.setValue',
                     'GM.getValue',
+                    'GM.setValue',
                 ],
                 require: [
                     'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
                 ],
             },
             proxyScript: {
-                enable: false,
+                enable: isDev,
+                baseUrl: baseUrl,
             },
         }),
     ],
 }
 
-module.exports = Config
+export default Config

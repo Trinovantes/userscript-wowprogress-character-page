@@ -1,273 +1,462 @@
 <template>
-    <div>
-        <h2>{{ getTierName(tierKey) }} ({{ getProgress(tierRank) }})</h2>
-        <table>
-            <thead>
-                <tr>
-                    <td>
-                        Boss
-                    </td>
-                    <td />
-                    <td>
-                        Best <span class="metric">{{ tierRank.metric }}</span>
-                    </td>
-                    <td>
-                        All Stars
-                    </td>
-                    <td>
-                        Rank
-                    </td>
-                    <td>
-                        Best %
-                    </td>
-                    <td>
-                        Median %
-                    </td>
-                    <td>
-                        Kills
-                    </td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    v-for="bossRank of tierRank.rankings"
-                    :key="bossRank.encounter.id"
-                >
-                    <td>
-                        <img
-                            :src="require(`@img/bosses/${tierRank.zone}/${bossRank.encounter.id}.jpg`)"
-                            class="wow-icon boss-icon"
-                        >
-                        {{ bossRank.encounter.name }}
-                    </td>
-                    <td>
-                        <img
-                            v-if="bossRank.totalKills > 0"
-                            :src="require(`@img/specs/${getSpecIcon(classID, bossRank.bestSpec)}`)"
-                            class="wow-icon spec-icon"
-                        >
-                    </td>
-                    <td>
-                        <span v-if="bossRank.totalKills > 0">
-                            {{ formatNum(bossRank.bestAmount) }}
-                        </span>
-                        <span
-                            v-else
-                            class="blank"
-                        />
-                    </td>
-                    <td>
-                        <span
-                            v-if="bossRank.allStars && bossRank.allStars.possiblePoints > 0"
-                        >
-                            {{ formatNum(bossRank.allStars.points) }}
-                        </span>
-                        <span
-                            v-else
-                            class="blank"
-                        />
-                    </td>
-                    <td>
-                        <span
-                            v-if="bossRank.allStars && bossRank.allStars.possiblePoints > 0"
-                            :style="{ color: getRankColor(bossRank.allStars.rankPercent) }"
-                        >
-                            {{ formatNum(bossRank.allStars.rank) }}
-                        </span>
-                        <span
-                            v-else
-                            class="blank"
-                        />
-                    </td>
-                    <td>
-                        <span
-                            v-if="bossRank.totalKills > 0"
-                            :style="{ color: getRankColor(bossRank.rankPercent) }"
-                        >
-                            {{ formatPercent(bossRank.rankPercent / 100) }}
-                        </span>
-                        <span
-                            v-else
-                            class="blank"
-                        />
-                    </td>
-                    <td>
-                        <span
-                            v-if="bossRank.totalKills > 0"
-                            :style="{ color: getRankColor(bossRank.medianPercent) }"
-                        >
-                            {{ formatPercent(bossRank.medianPercent / 100) }}
-                        </span>
-                        <span
-                            v-else
-                            class="blank"
-                        />
-                    </td>
-                    <td>
-                        <span
-                            v-if="bossRank.totalKills > 0"
-                        >
-                            {{ formatNum(bossRank.totalKills) }}
-                        </span>
-                        <span
-                            v-else
-                            class="blank"
-                        />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div v-if="!isLoading">
+        <div class="btn-group">
+            <a
+                v-for="metric of Object.values(Metric)"
+                :key="metric"
+                style="text-transform: uppercase;"
+                :class="{
+                    'btn': true,
+                    'active': metricFilter === metric
+                }"
+                @click="metricFilter = metric"
+            >
+                {{ metric }}
+            </a>
+        </div>
+        <div class="btn-group">
+            <a
+                :class="`btn ${specFilter === '' ? 'active' : ''}`"
+                @click="specFilter = ''"
+            >
+                All Specs
+            </a>
+            <a
+                v-for="spec of playerSpecs"
+                :key="spec.name"
+                :class="`btn ${specFilter === spec.name ? 'active' : ''}`"
+                @click="specFilter = spec.name"
+            >
+                {{ spec.name }}
+            </a>
+        </div>
+
+        <div class="btn-group">
+            <a
+                v-for="difficulty of Difficulty"
+                :key="difficulty"
+                :class="`btn ${difficultyFilter === difficulty ? 'active' : ''}`"
+                @click="difficultyFilter = difficulty"
+            >
+                {{ difficulty }}
+            </a>
+        </div>
+
+        <div
+            v-for="[tier, tierInfo] of Object.entries(characterTierInfos)"
+            :key="tier"
+            class="raid-ranking"
+        >
+            <h2>{{ getTierName(tier) }} ({{ getRaidProgress(tier) }})</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <td>
+                            Boss
+                        </td>
+                        <td>
+                        <!-- Best Spec -->
+                        </td>
+                        <td class="metric">
+                            Best <span>{{ metricFilter }}</span>
+                        </td>
+                        <td>
+                            All Stars
+                        </td>
+                        <td>
+                            Rank
+                        </td>
+                        <td>
+                            Best %
+                        </td>
+                        <td>
+                            Median %
+                        </td>
+                        <td>
+                            Kills
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        v-for="bossRank of tierInfo.rankings"
+                        :key="bossRank.encounter.id"
+                    >
+                        <td class="boss-name">
+                            <img
+                                :src="getBossIcon(tierInfo.zone, bossRank.encounter.id)"
+                                class="wow-icon boss-icon"
+                            >
+                            <span>
+                                {{ bossRank.encounter.name }}
+                            </span>
+                        </td>
+                        <td>
+                            <img
+                                v-if="bossRank.totalKills > 0"
+                                :src="getSpecIcon(bossRank.bestSpec)"
+                                class="wow-icon spec-icon"
+                            >
+                            <span
+                                v-else
+                                class="blank"
+                            />
+                        </td>
+                        <td>
+                            <span v-if="bossRank.totalKills > 0">
+                                {{ formatNum(bossRank.bestAmount) }}
+                            </span>
+                            <span
+                                v-else
+                                class="blank"
+                            />
+                        </td>
+                        <td>
+                            <span
+                                v-if="bossRank.allStars && bossRank.allStars.possiblePoints > 0"
+                            >
+                                {{ formatNum(bossRank.allStars.points) }}
+                            </span>
+                            <span
+                                v-else
+                                class="blank"
+                            />
+                        </td>
+                        <td>
+                            <span
+                                v-if="bossRank.allStars && bossRank.allStars.possiblePoints > 0"
+                                :style="{ color: getRankColor(bossRank.allStars.rankPercent) }"
+                            >
+                                {{ formatNum(bossRank.allStars.rank) }}
+                            </span>
+                            <span
+                                v-else
+                                class="blank"
+                            />
+                        </td>
+                        <td>
+                            <span
+                                v-if="bossRank.totalKills > 0"
+                                :style="{ color: getRankColor(bossRank.rankPercent) }"
+                            >
+                                {{ formatPercent(bossRank.rankPercent / 100) }}
+                            </span>
+                            <span
+                                v-else
+                                class="blank"
+                            />
+                        </td>
+                        <td>
+                            <span
+                                v-if="bossRank.totalKills > 0"
+                                :style="{ color: getRankColor(bossRank.medianPercent) }"
+                            >
+                                {{ formatPercent(bossRank.medianPercent / 100) }}
+                            </span>
+                            <span
+                                v-else
+                                class="blank"
+                            />
+                        </td>
+                        <td>
+                            <span
+                                v-if="bossRank.totalKills > 0"
+                            >
+                                {{ formatNum(bossRank.totalKills) }}
+                            </span>
+                            <span
+                                v-else
+                                class="blank"
+                            />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
-import Vue from 'vue'
+import { computed, defineComponent, onMounted, ref, watch } from 'vue'
+import { Specs, Metric, TAG, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
+import { TierInfo, OptionalFilters } from '@/models/WarcraftLogsV2'
+import { useTypedStore } from '@/store'
 
-import { ITierRank } from '@models/WarcraftLogs'
-import { Classes, getTierName, Tiers } from '@Constants'
+export default defineComponent({
+    setup() {
+        const store = useTypedStore()
+        const isLoading = computed(() => store.state.isLoading)
+        const characterData = computed(() => store.state.characterData)
+        const playerClassID = computed(() => characterData.value?.classID)
 
-@Component
-export default class WarcraftLogsRaidRankings extends Vue {
-    @Prop({ type: Number, required: true }) readonly classID!: number
-    @Prop({ type: String, required: true }) readonly tierKey!: string
-    @Prop({ type: Object, required: true }) readonly tierRank!: ITierRank
-
-    getTierName(tierKey: Tiers): string {
-        return getTierName(tierKey)
-    }
-
-    getProgress(tierRank: ITierRank): string {
-        const numBosses = tierRank.rankings.length
-        let numBossesKilled = 0
-
-        for (const bossRank of tierRank.rankings) {
-            if (bossRank.totalKills > 0) {
-                numBossesKilled += 1
+        const fetch = async() => {
+            const optionalFilters: OptionalFilters = {
+                specName: specFilter.value,
+                metric: metricFilter.value,
+                difficulty: difficultyFilter.value,
             }
+
+            await store.dispatch('fetchCharacterData', optionalFilters)
         }
 
-        return `${numBossesKilled}/${numBosses}M`
-    }
+        onMounted(fetch)
 
-    formatPercent(val: number): string {
-        if (isNaN(val)) {
-            return '-'
+        const onChangeFetch = async<T>(newValue: T, oldValue: T) => {
+            if (newValue === oldValue) {
+                return
+            }
+
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            console.info(TAG, `Changed "${oldValue}" to "${newValue}"`)
+            await fetch()
         }
 
-        const percentFormatter = new Intl.NumberFormat(navigator.language, {
-            minimumFractionDigits: 1,
-            maximumFractionDigits: 1,
-            style: 'percent',
+        const specFilter = ref<string>('')
+        watch(specFilter, onChangeFetch)
+
+        const metricFilter = computed({
+            get(): Metric {
+                return store.state.metricFilter
+            },
+            async set(newVal: Metric) {
+                const oldVal = store.state.metricFilter
+                store.commit('setMetricFilter', newVal)
+                await store.dispatch('save')
+                await onChangeFetch(newVal, oldVal)
+            },
         })
 
-        return percentFormatter.format(val)
-    }
-
-    formatNum(val: number): string {
-        if (isNaN(val)) {
-            return '-'
-        }
-
-        const numFormatter = new Intl.NumberFormat(navigator.language, {
-            maximumFractionDigits: 0,
+        const difficultyFilter = computed({
+            get(): Difficulty {
+                return store.state.difficultyFilter
+            },
+            async set(newVal: Difficulty) {
+                const oldVal = store.state.difficultyFilter
+                store.commit('setDifficultyFilter', newVal)
+                await store.dispatch('save')
+                await onChangeFetch(newVal, oldVal)
+            },
         })
 
-        return numFormatter.format(val)
-    }
+        const characterTierInfos = computed(() => {
+            const tierInfos: { [key in Tier]?: TierInfo } = {}
 
-    getRankColor(rank: number | undefined): string {
-        if (!rank || isNaN(rank)) {
-            return 'inherit'
+            if (characterData.value) {
+                for (const [tier, tierInfo] of Object.entries(characterData.value)) {
+                    if (tier in Tier && typeof tierInfo === 'object') {
+                        tierInfos[tier as Tier] = tierInfo
+                    }
+                }
+            }
+
+            return tierInfos
+        })
+
+        const getRaidProgress = (tier: Tier): string => {
+            const tierInfos = characterTierInfos.value?.[tier]
+            if (!tierInfos) {
+                return 'Failed to calculate progress'
+            }
+
+            const numBosses = tierInfos.rankings.length
+            let numBossesKilled = 0
+
+            for (const bossRank of tierInfos.rankings) {
+                if (bossRank.totalKills > 0) {
+                    numBossesKilled += 1
+                }
+            }
+
+            return `${numBossesKilled}/${numBosses}${getDifficultyShortName(difficultyFilter.value)}`
         }
 
-        let color = ''
+        const bossIcons = getBossIcons()
+        const getBossIcon = (tier: Tier, encounterId: number): unknown => {
+            const filename = `${tier}/${encounterId}.jpg`
+            if (!(filename in bossIcons)) {
+                console.warn(TAG, `Missing ${filename}`)
+                return null
+            }
 
-        if (rank < 25) {
-            color = 'common'
-        } else if (rank < 50) {
-            color = 'uncommon'
-        } else if (rank < 75) {
-            color = 'rare'
-        } else if (rank < 95) {
-            color = 'epic'
-        } else if (rank < 99) {
-            color = 'legendary'
-        } else if (rank < 100) {
-            color = 'astounding'
-        } else if (rank === 100) {
-            color = 'artifact'
-        } else {
-            return 'inherit'
+            return bossIcons[filename]
         }
 
-        return `var(--${color})`
+        const specIcons = getSpecIcons()
+        const getSpecIcon = (specName: string): unknown => {
+            if (!playerClassID.value) {
+                console.warn(TAG, 'Missing player class')
+                return ''
+            }
+
+            const playerClassName = getClassName(playerClassID.value)
+            const filename = `${playerClassName}-${specName}.jpg`.toLowerCase()
+            if (!(filename in specIcons)) {
+                console.warn(TAG, `Missing ${filename}`)
+                return null
+            }
+
+            return specIcons[filename]
+        }
+
+        const playerSpecs = computed(() => {
+            if (!playerClassID.value) {
+                return []
+            }
+
+            return Specs[getClassName(playerClassID.value)]
+        })
+
+        return {
+            isLoading,
+
+            getTierName,
+            getRaidProgress,
+            getBossIcon,
+            getSpecIcon,
+
+            playerSpecs,
+            specFilter,
+            metricFilter,
+            difficultyFilter,
+            characterTierInfos,
+
+            Metric,
+            Difficulty,
+        }
+    },
+
+    methods: {
+        formatPercent(val: number): string {
+            if (isNaN(val)) {
+                return '-'
+            }
+
+            const percentFormatter = new Intl.NumberFormat(navigator.language, {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+                style: 'percent',
+            })
+
+            return percentFormatter.format(val)
+        },
+
+        formatNum(val: number): string {
+            if (isNaN(val)) {
+                return '-'
+            }
+            const numFormatter = new Intl.NumberFormat(navigator.language, {
+                maximumFractionDigits: 0,
+            })
+            return numFormatter.format(val)
+        },
+
+        getRankColor(rank: number | undefined): string {
+            if (!rank || isNaN(rank)) {
+                return 'inherit'
+            }
+
+            let color = ''
+            if (rank < 25) {
+                color = 'common'
+            } else if (rank < 50) {
+                color = 'uncommon'
+            } else if (rank < 75) {
+                color = 'rare'
+            } else if (rank < 95) {
+                color = 'epic'
+            } else if (rank < 99) {
+                color = 'legendary'
+            } else if (rank < 100) {
+                color = 'astounding'
+            } else if (rank === 100) {
+                color = 'artifact'
+            } else {
+                return 'inherit'
+            }
+
+            return `var(--${color})`
+        },
+    },
+})
+
+function getBossIcons(): { [key: string]: unknown } {
+    const imgReq = require.context('@/assets/img/bosses', true, /\.(jpe?g|png|gif|svg)$/i)
+    const images: { [key: string]: unknown } = {}
+
+    for (const filename of imgReq.keys()) {
+        images[filename.replace('./', '')] = imgReq(filename)
     }
 
-    getSpecIcon(classID: number, specName: string): string {
-        const className = Object.values(Classes)[classID]
-        return `${className}-${specName.toLowerCase()}.jpg`
+    return images
+}
+
+function getSpecIcons(): { [key: string]: unknown } {
+    const imgReq = require.context('@/assets/img/specs', false, /\.(jpe?g|png|gif|svg)$/i)
+    const images: { [key: string]: unknown } = {}
+
+    for (const filename of imgReq.keys()) {
+        images[filename.replace('./', '')] = imgReq(filename)
     }
+
+    return images
 }
 </script>
 
-<style lang="scss" scoped>
-h2{
-    margin: 0;
-    margin-bottom: $margin / 2;
-}
-
-table{
-    $height: 30px;
-
-    border-collapse: collapse;
-    margin: 0;
-
-    tr{
-        td{
-            line-height: $height;
-            text-align: right;
-            padding: 5px;
-
-            &:first-child{
-                text-align: left;
-            }
-
-            img.wow-icon{
-                height: $height;
-                width: $height;
-
-                &.boss-icon {
-                    float: left;
-                    margin-right: 10px;
-                }
-                &.spec-icon{
-                    float: left;
-                }
-            }
-
-            span.blank:before{
-                content: '-';
-                color: var(--common);
-
-                display: inline-block;
-                height: $height;
-                width: $height;
-            }
-
-            span.metric{
-                text-transform: uppercase;
-            }
-        }
+<style lang="scss">
+.raid-ranking{
+    h2{
+        margin: $margin 0;
     }
 
-    tbody{
+    table{
+        $height: 30px;
+
+        border-collapse: collapse;
+        margin: 0;
+
         tr{
             border-top: $border;
 
             &:last-child{
                 border-bottom: $border;
+            }
+
+            td{
+                line-height: $height;
+                text-align: right;
+                padding: 5px;
+
+                &:first-child{
+                    text-align: left;
+                }
+
+                &.boss-name{
+                    display: grid;
+                    grid-template-columns: $height 1fr;
+                    gap: $margin;
+                }
+
+                &.metric{
+                    span{
+                        text-transform: uppercase;
+                    }
+                }
+
+                img{
+                    display: block;
+                    height: $height;
+                    width: $height;
+                }
+
+                span.blank:before{
+                    content: '-';
+                    color: var(--common);
+
+                    display: inline-block;
+                    height: $height;
+                    width: $height;
+                }
             }
         }
     }

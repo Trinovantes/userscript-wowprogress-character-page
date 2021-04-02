@@ -1,18 +1,11 @@
-'use strict'
+import CharacterPage from '@/CharacterPage'
+import '@/assets/css/main.scss'
+import WarcraftLogsContainer from '@/components/WarcraftLogsContainer.vue'
+import { TAG } from '@/Constants'
 
-import CharacterPage from './CharacterPage'
-import WarcraftLogsContainer from './components/WarcraftLogsContainer.vue'
-
-function main() {
-    try {
-        const characterPage = new CharacterPage()
-        characterPage.parse()
-        characterPage.registerComponent(WarcraftLogsContainer)
-        characterPage.render()
-    } catch (error) {
-        console.warn(error)
-    }
+try {
+    const characterPage = new CharacterPage()
+    characterPage.render(WarcraftLogsContainer)
+} catch (error) {
+    console.warn(TAG, error)
 }
-
-import '@css/main.scss'
-void main()

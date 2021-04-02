@@ -8,8 +8,6 @@ module.exports = {
     root: true,
 
     parserOptions: {
-        // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser#configuration
-        // https://github.com/TypeStrong/fork-ts-checker-webpack-plugin#eslint
         extraFileExtensions: ['.vue'],
         parser: '@typescript-eslint/parser',
         project: path.resolve(__dirname, './tsconfig.json'),
@@ -24,33 +22,26 @@ module.exports = {
         node: true,
     },
 
-    // Rules order is important, please avoid shuffling them
-    extends: [
-        // Base ESLint recommended rules
-        // 'eslint:recommended',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:@typescript-eslint/recommended-requiring-type-checking',
-
-        // Uncomment any of the lines below to choose desired strictness, but leave only one uncommented!
-        // See https://eslint.vuejs.org/rules/#available-rules
-        // 'plugin:vue/essential', // Priority A: Essential (Error Prevention)
-        // 'plugin:vue/strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
-        'plugin:vue/recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
-
-        'standard',
-    ],
-
-    plugins: [
-        '@typescript-eslint',
-        'vue',
-    ],
-
     // Disable warnings for variables that are accessed but not defined in same file
     globals: {
         GM: true,
         $: true,
         jQuery: true,
     },
+
+    // Rules order is important, please avoid shuffling them
+    extends: [
+        'standard',
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended-requiring-type-checking',
+        'plugin:vue/recommended',
+    ],
+
+    plugins: [
+        '@typescript-eslint',
+        'vue',
+    ],
 
     rules: {
         'generator-star-spacing': ['error', 'before'],
@@ -72,7 +63,7 @@ module.exports = {
 
         'comma-dangle': ['error', 'always-multiline'],
         'space-before-function-paren': ['error', 'never'],
-        indent: ['error', 4, {
+        'indent': ['error', 4, {
             SwitchCase: 1,
         }],
 
@@ -104,10 +95,20 @@ module.exports = {
             default: 'generic',
         }],
 
-        semi: 'off',
+        '@typescript-eslint/member-delimiter-style': ['error', {
+            multiline: {
+                delimiter: 'none',
+                requireLast: true,
+            },
+            singleline: {
+                delimiter: 'semi',
+                requireLast: false,
+            },
+        }],
+
+        'semi': 'off',
         '@typescript-eslint/semi': ['error', 'never'],
 
-        // allow debugger during development only
-        'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+        'no-debugger': 'error',
     },
 }

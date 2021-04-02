@@ -1,14 +1,11 @@
+export const TAG = 'userscript-wowprogress-character-page'
+
 // ----------------------------------------------------------------------------
-// Raid Info
+// WarcraftLogs
 // ----------------------------------------------------------------------------
 
-export enum Tiers {
-    // Dirty hack to work with GraphQL aliases
-    // We need to use aliases when we request the same field (zoneRankings) with different args
-    // But since our aliases must be type checked [key in Tiers], any other fields that we request must also be in this enum
-    classID = 'classID',
-    canonicalID = 'canonicalID',
-
+export enum Tier {
+    // BfA
     T20 = 'T20',
     T21 = 'T21',
     T22 = 'T22',
@@ -16,52 +13,68 @@ export enum Tiers {
     T24 = 'T24',
 }
 
-export function getTierName(tier: Tiers): string {
+export function getTierName(tier: Tier): string {
     switch (tier) {
-        case Tiers.T20: return 'Uldir'
-        case Tiers.T21: return 'Dazalor'
-        case Tiers.T22: return 'Cruicible of Storms'
-        case Tiers.T23: return 'Eternal Palance'
-        case Tiers.T24: return 'Nyalotha'
+        // BfA
+        case Tier.T20: return 'Uldir'
+        case Tier.T21: return 'Dazalor'
+        case Tier.T22: return 'Cruicible of Storms'
+        case Tier.T23: return 'Eternal Palance'
+        case Tier.T24: return 'Nyalotha'
+
         default: {
-            throw new Error(`Unknown tier:${tier}`)
+            return 'Unknown Tier'
         }
     }
 }
 
-export const CurrentTiers: Array<Tiers> = [
-    Tiers.T24,
+export const CurrentTiers = [
+    Tier.T24,
 ]
 
-// ----------------------------------------------------------------------------
-// WarcraftLogs
-// ----------------------------------------------------------------------------
-
-export enum Regions {
-    Unknown = 'unknown',
-    US = 'us',
-    EU = 'eu',
-}
+export type Region = 'us' | 'eu' | 'unknown'
 
 export enum Difficulty {
-    LFR = 1,
-    Normal = 3,
-    Heroic = 4,
-    Mythic = 5,
+    LFR = 'LFR',
+    NORMAL = 'Normal',
+    HEROIC = 'Heroic',
+    MYTHIC = 'Mythic',
 }
 
-export enum Metrics {
-    Default = 'default',
+export const DEFAULT_DIFFICULTY = Difficulty.MYTHIC
+
+export function getDifficultyShortName(difficulty: Difficulty): string {
+    switch (difficulty) {
+        case Difficulty.LFR: return 'LFR'
+        case Difficulty.NORMAL: return 'N'
+        case Difficulty.HEROIC: return 'H'
+        case Difficulty.MYTHIC: return 'M'
+    }
+}
+
+export function getDifficultyID(difficulty: Difficulty): number {
+    switch (difficulty) {
+        case Difficulty.LFR: return 1
+        case Difficulty.NORMAL: return 3
+        case Difficulty.HEROIC: return 4
+        case Difficulty.MYTHIC: return 5
+    }
+}
+
+export enum Metric {
     DPS = 'dps',
     HPS = 'hps',
+    BOSSDPS ='bossdps',
 }
+
+export const DEFAULT_METRIC = Metric.DPS
 
 // ----------------------------------------------------------------------------
 // WoW
 // ----------------------------------------------------------------------------
 
-export enum Classes {
-    Unknown = 'Unknown',
+export enum WowClass {
+    Unknown = 'UnknownClass',
     DeathKnight = 'deathknight',
     Druid = 'druid',
     Hunter = 'hunter',
@@ -76,14 +89,34 @@ export enum Classes {
     DemonHunter = 'demonhunter',
 }
 
-export interface ISpecInfo {
-    name: string,
-    role: string,
+export function getClassName(classID: number): WowClass {
+    switch (classID) {
+        case 1: return WowClass.DeathKnight
+        case 2: return WowClass.Druid
+        case 3: return WowClass.Hunter
+        case 4: return WowClass.Mage
+        case 5: return WowClass.Monk
+        case 6: return WowClass.Paladin
+        case 7: return WowClass.Priest
+        case 8: return WowClass.Rogue
+        case 9: return WowClass.Shaman
+        case 10: return WowClass.Warlock
+        case 11: return WowClass.Warrior
+        case 12: return WowClass.DemonHunter
+        default: {
+            return WowClass.Unknown
+        }
+    }
 }
 
-export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
-    [Classes.Unknown]: [],
-    [Classes.DeathKnight]: [
+export interface SpecInfo {
+    name: string
+    role: string
+}
+
+export const Specs: { [key in WowClass]: Array<SpecInfo> } = {
+    [WowClass.Unknown]: [],
+    [WowClass.DeathKnight]: [
         {
             name: 'Blood',
             role: 'tank',
@@ -97,7 +130,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'mdps',
         },
     ],
-    [Classes.DemonHunter]: [
+    [WowClass.DemonHunter]: [
         {
             name: 'Havoc',
             role: 'mdps',
@@ -107,7 +140,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'tank',
         },
     ],
-    [Classes.Druid]: [
+    [WowClass.Druid]: [
         {
             name: 'Balance',
             role: 'rdps',
@@ -125,7 +158,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'healer',
         },
     ],
-    [Classes.Hunter]: [
+    [WowClass.Hunter]: [
         {
             name: 'BeastMastery',
             role: 'rdps',
@@ -139,7 +172,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'mdps',
         },
     ],
-    [Classes.Mage]: [
+    [WowClass.Mage]: [
         {
             name: 'Arcane',
             role: 'rdps',
@@ -153,7 +186,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'rdps',
         },
     ],
-    [Classes.Monk]: [
+    [WowClass.Monk]: [
         {
             name: 'Brewmaster',
             role: 'tank',
@@ -167,7 +200,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'mdps',
         },
     ],
-    [Classes.Paladin]: [
+    [WowClass.Paladin]: [
         {
             name: 'Holy',
             role: 'healer',
@@ -181,7 +214,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'mdps',
         },
     ],
-    [Classes.Priest]: [
+    [WowClass.Priest]: [
         {
             name: 'Discipline',
             role: 'healer',
@@ -195,7 +228,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'rdps',
         },
     ],
-    [Classes.Rogue]: [
+    [WowClass.Rogue]: [
         {
             name: 'Assassination',
             role: 'mdps',
@@ -209,7 +242,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'mdps',
         },
     ],
-    [Classes.Shaman]: [
+    [WowClass.Shaman]: [
         {
             name: 'Elemental',
             role: 'rdps',
@@ -223,7 +256,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'healer',
         },
     ],
-    [Classes.Warlock]: [
+    [WowClass.Warlock]: [
         {
             name: 'Affliction',
             role: 'rdps',
@@ -237,7 +270,7 @@ export const Specs: { [key in Classes]: Array<ISpecInfo> } = {
             role: 'rdps',
         },
     ],
-    [Classes.Warrior]: [
+    [WowClass.Warrior]: [
         {
             name: 'Arms',
             role: 'mdps',
