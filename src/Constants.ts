@@ -11,6 +11,9 @@ export enum Tier {
     T22 = 'T22',
     T23 = 'T23',
     T24 = 'T24',
+
+    // SL
+    T26 = 'T26',
 }
 
 export function getTierName(tier: Tier): string {
@@ -22,6 +25,9 @@ export function getTierName(tier: Tier): string {
         case Tier.T23: return 'Eternal Palance'
         case Tier.T24: return 'Nyalotha'
 
+        // BfA
+        case Tier.T26: return 'Castle Nathria'
+
         default: {
             return 'Unknown Tier'
         }
@@ -29,7 +35,7 @@ export function getTierName(tier: Tier): string {
 }
 
 export const CurrentTiers = [
-    Tier.T24,
+    Tier.T26,
 ]
 
 export type Region = 'us' | 'eu' | 'unknown'
