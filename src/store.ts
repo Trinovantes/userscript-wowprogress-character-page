@@ -117,8 +117,8 @@ export function createRootStore(region: string, realm: string, characterName: st
             commit('setClientId', '')
             commit('setClientSecret', '')
             commit('setAccessToken', '')
-            commit('setMetricFilter', '')
-            commit('setDifficultyFilter', '')
+            commit('setMetricFilter', DEFAULT_METRIC)
+            commit('setDifficultyFilter', DEFAULT_DIFFICULTY)
             await dispatch('save')
         },
 

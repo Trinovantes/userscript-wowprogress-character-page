@@ -3,7 +3,7 @@
     "productName": "WoWProgress Character Page",
     "author": "Stephen",
     "description": "Automatically embeds third-party information inside of each character's WoWProgress page",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "private": true,
     "license": "MIT",
     "scripts": {
