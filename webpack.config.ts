@@ -38,7 +38,7 @@ const Config: webpack.Configuration = {
         ? 'inline-source-map'
         : false,
 
-    entry: path.resolve(__dirname, './src/index.ts'),
+    entry: path.resolve(srcDir, 'index.ts'),
     output: {
         filename: `${packageJson.name}.user.js`,
     },
@@ -48,10 +48,6 @@ const Config: webpack.Configuration = {
         alias: {
             '@': path.resolve(srcDir),
         },
-        modules: [
-            path.resolve(__dirname, './src'),
-            'node_modules',
-        ],
     },
 
     module: {
@@ -70,12 +66,14 @@ const Config: webpack.Configuration = {
             {
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
-                use: [{
-                    loader: 'ts-loader',
-                    options: {
-                        appendTsSuffixTo: [/\.vue$/],
+                use: [
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            appendTsSuffixTo: [/\.vue$/],
+                        },
                     },
-                }],
+                ],
             },
             {
                 test: /\.s(a|c)ss$/,
