@@ -4,8 +4,7 @@ import { createRootStore, key, RootState } from './store'
 import { Store } from 'vuex'
 
 export default class CharacterPage {
-    static idx = 0
-
+    idx = 0
     store: Store<RootState>
 
     constructor() {
@@ -43,12 +42,13 @@ export default class CharacterPage {
     }
 
     render<IComponentType>(component: IComponentType): void {
-        const $profile = $('.registeredTo')
+        this.idx++
 
         const app = createApp(component)
         app.use(this.store, key)
 
-        $profile.before(`<div id="app-${CharacterPage.idx}" />`)
-        app.mount(`#app-${CharacterPage.idx}`)
+        const $profile = $('.registeredTo')
+        $profile.before(`<div id="app-${this.idx}" />`)
+        app.mount(`#app-${this.idx}`)
     }
 }
