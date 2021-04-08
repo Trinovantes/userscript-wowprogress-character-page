@@ -112,8 +112,14 @@ export function createRootStore(region: string, realm: string, characterName: st
             ])
         },
 
-        async reset({ commit, dispatch }): Promise<void> {
-            console.info(DEFINE.NAME, 'store::reset')
+        async resetAccessToken({ commit, dispatch }): Promise<void> {
+            console.info(DEFINE.NAME, 'store::resetEverything')
+            commit('setAccessToken', '')
+            await dispatch('save')
+        },
+
+        async resetEverything({ commit, dispatch }): Promise<void> {
+            console.info(DEFINE.NAME, 'store::resetEverything')
             commit('setClientId', '')
             commit('setClientSecret', '')
             commit('setAccessToken', '')

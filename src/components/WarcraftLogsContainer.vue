@@ -28,13 +28,22 @@
             v-else
         />
 
-        <a
-            v-if="accessToken"
-            class="btn"
-            @click="resetApi"
-        >
-            Reset API
-        </a>
+        <div class="btn-group">
+            <a
+                class="btn"
+                title="This will attempt to reload all the data"
+                @click="resetAccessToken"
+            >
+                Reload
+            </a>
+            <a
+                class="btn"
+                title="This will reset your settings and you will need to re-enter your Warcraft Logs API client id/secret again"
+                @click="resetEverything"
+            >
+                Reset Everything
+            </a>
+        </div>
     </div>
 </template>
 
@@ -62,8 +71,12 @@ export default defineComponent({
         const characterName = computed(() => store.state.characterName)
         const accessToken = computed(() => store.state.accessToken)
 
-        const resetApi = async() => {
-            await store.dispatch('reset')
+        const resetAccessToken = async() => {
+            await store.dispatch('resetAccessToken')
+        }
+
+        const resetEverything = async() => {
+            await store.dispatch('resetEverything')
         }
 
         return {
@@ -74,7 +87,8 @@ export default defineComponent({
             characterName,
             accessToken,
 
-            resetApi,
+            resetAccessToken,
+            resetEverything,
         }
     },
 })
