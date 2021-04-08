@@ -181,7 +181,7 @@
 import { computed, defineComponent, onMounted, ref, watch } from 'vue'
 import { Specs, Metric, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
 import { TierInfo, OptionalFilters } from '@/models/WarcraftLogsV2'
-import { useTypedStore } from '@/store'
+import { RootAction, RootMutation, useTypedStore } from '@/store'
 import { formatPercent, formatNum, getRankColor } from '@/utils'
 
 export default defineComponent({
@@ -198,7 +198,7 @@ export default defineComponent({
                 difficulty: difficultyFilter.value,
             }
 
-            await store.dispatch('fetchCharacterData', optionalFilters)
+            await store.dispatch(RootAction.FETCH_CHARACTER_DATA, optionalFilters)
         }
 
         onMounted(fetch)
@@ -222,8 +222,8 @@ export default defineComponent({
             },
             async set(newVal: Metric) {
                 const oldVal = store.state.metricFilter
-                store.commit('setMetricFilter', newVal)
-                await store.dispatch('save')
+                store.commit(RootMutation.SET_METRIC_FILTER, newVal)
+                await store.dispatch(RootAction.SAVE)
                 await onChangeFetch(newVal, oldVal)
             },
         })
@@ -234,8 +234,8 @@ export default defineComponent({
             },
             async set(newVal: Difficulty) {
                 const oldVal = store.state.difficultyFilter
-                store.commit('setDifficultyFilter', newVal)
-                await store.dispatch('save')
+                store.commit(RootMutation.SET_DIFFICULTY_FILTER, newVal)
+                await store.dispatch(RootAction.SAVE)
                 await onChangeFetch(newVal, oldVal)
             },
         })

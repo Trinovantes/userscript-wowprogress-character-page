@@ -48,3 +48,9 @@ export function getRankColor(rank: number | undefined): string {
 
     return `var(--${color})`
 }
+
+export async function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms)
+    })
+}
