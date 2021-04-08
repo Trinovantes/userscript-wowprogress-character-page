@@ -36,7 +36,7 @@ export const CurrentTiers = [
     Tier.T26,
 ]
 
-export type Region = 'us' | 'eu' | 'unknown'
+export type Region = 'us' | 'eu'
 
 export enum Difficulty {
     LFR = 'LFR',
