@@ -24,7 +24,6 @@
                 <input
                     v-model="clientId"
                     type="text"
-                    @input="onInputChanged"
                 >
             </label>
             <label>
@@ -32,7 +31,6 @@
                 <input
                     v-model="clientSecret"
                     type="text"
-                    @input="onInputChanged"
                 >
             </label>
             <button type="submit" class="btn">
