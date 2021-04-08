@@ -182,6 +182,7 @@ import { computed, defineComponent, onMounted, ref, watch } from 'vue'
 import { Specs, Metric, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
 import { TierInfo, OptionalFilters } from '@/models/WarcraftLogsV2'
 import { useTypedStore } from '@/store'
+import { formatPercent, formatNum, getRankColor } from '@/utils'
 
 export default defineComponent({
     setup() {
@@ -323,60 +324,11 @@ export default defineComponent({
 
             Metric,
             Difficulty,
+
+            formatPercent,
+            formatNum,
+            getRankColor,
         }
-    },
-
-    methods: {
-        formatPercent(val: number): string {
-            if (isNaN(val)) {
-                return '-'
-            }
-
-            const percentFormatter = new Intl.NumberFormat(navigator.language, {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-                style: 'percent',
-            })
-
-            return percentFormatter.format(val)
-        },
-
-        formatNum(val: number): string {
-            if (isNaN(val)) {
-                return '-'
-            }
-            const numFormatter = new Intl.NumberFormat(navigator.language, {
-                maximumFractionDigits: 0,
-            })
-            return numFormatter.format(val)
-        },
-
-        getRankColor(rank: number | undefined): string {
-            if (!rank || isNaN(rank)) {
-                return 'inherit'
-            }
-
-            let color = ''
-            if (rank < 25) {
-                color = 'common'
-            } else if (rank < 50) {
-                color = 'uncommon'
-            } else if (rank < 75) {
-                color = 'rare'
-            } else if (rank < 95) {
-                color = 'epic'
-            } else if (rank < 99) {
-                color = 'legendary'
-            } else if (rank < 100) {
-                color = 'astounding'
-            } else if (rank === 100) {
-                color = 'artifact'
-            } else {
-                return 'inherit'
-            }
-
-            return `var(--${color})`
-        },
     },
 })
 

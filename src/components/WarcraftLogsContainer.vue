@@ -39,7 +39,6 @@
 </template>
 
 <script lang="ts">
-import { mapState } from 'vuex'
 import { computed, defineComponent } from 'vue'
 import Loader from './Loader.vue'
 import WarcraftLogsAuth from './WarcraftLogsAuth.vue'
@@ -57,6 +56,11 @@ export default defineComponent({
         const store = useTypedStore()
 
         const isLoading = computed(() => store.state.isLoading)
+        const errorMessage = computed(() => store.state.errorMessage)
+        const region = computed(() => store.state.region)
+        const realm = computed(() => store.state.realm)
+        const characterName = computed(() => store.state.characterName)
+        const accessToken = computed(() => store.state.accessToken)
 
         const resetApi = async() => {
             await store.dispatch('reset')
@@ -64,17 +68,15 @@ export default defineComponent({
 
         return {
             isLoading,
+            errorMessage,
+            region,
+            realm,
+            characterName,
+            accessToken,
+
             resetApi,
         }
     },
-
-    computed: mapState([
-        'errorMessage',
-        'region',
-        'realm',
-        'characterName',
-        'accessToken',
-    ]),
 })
 </script>
 
