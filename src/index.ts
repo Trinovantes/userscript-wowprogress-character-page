@@ -1,10 +1,14 @@
 import CharacterPage from '@/CharacterPage'
-import '@/assets/css/main.scss'
 import WarcraftLogsContainer from '@/components/WarcraftLogsContainer.vue'
+import '@/assets/css/main.scss'
 
-try {
+async function main() {
+    await $.when($.ready)
+
     const characterPage = new CharacterPage()
     characterPage.render(WarcraftLogsContainer)
-} catch (error) {
-    console.warn(DEFINE.NAME, error)
 }
+
+main().catch((err) => {
+    console.warn(DEFINE.NAME, err)
+})
