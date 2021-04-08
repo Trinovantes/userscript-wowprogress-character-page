@@ -1,11 +1,11 @@
 {
     "name": "userscript-wowprogress-character-page",
     "productName": "WoWProgress Character Page",
-    "author": "Stephen",
     "description": "Automatically embeds third-party information inside of each character's WoWProgress page",
+    "author": "Stephen",
+    "license": "AGPL-3.0-only",
     "version": "2.1.1",
     "private": true,
-    "license": "MIT",
     "scripts": {
         "dev": "cross-env NODE_ENV=development webpack serve",
         "build": "webpack",
