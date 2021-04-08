@@ -106,6 +106,16 @@ const Config: webpack.Configuration = {
     },
 
     plugins: [
+        new webpack.DefinePlugin({
+            'DEFINE.IS_DEV': JSON.stringify(isDev),
+
+            'DEFINE.NAME': JSON.stringify(packageJson.name),
+            'DEFINE.PRODUCT_NAME': JSON.stringify(packageJson.productName),
+            'DEFINE.AUTHOR': JSON.stringify(packageJson.author),
+            'DEFINE.DESC': JSON.stringify(packageJson.description),
+            'DEFINE.VERSION': JSON.stringify(packageJson.version),
+            'DEFINE.REPO': JSON.stringify(packageJson.repository),
+        }),
         new VueLoaderPlugin(),
         new WebpackUserscript({
             headers: {

@@ -179,7 +179,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from 'vue'
-import { Specs, Metric, TAG, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
+import { Specs, Metric, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
 import { TierInfo, OptionalFilters } from '@/models/WarcraftLogsV2'
 import { useTypedStore } from '@/store'
 
@@ -208,7 +208,7 @@ export default defineComponent({
             }
 
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            console.info(TAG, `Changed "${oldValue}" to "${newValue}"`)
+            console.info(DEFINE.NAME, `Changed "${oldValue}" to "${newValue}"`)
             await fetch()
         }
 
@@ -275,7 +275,7 @@ export default defineComponent({
         const getBossIcon = (tier: Tier, encounterId: number): unknown => {
             const filename = `${tier}/${encounterId}.jpg`
             if (!(filename in bossIcons)) {
-                console.warn(TAG, `Missing ${filename}`)
+                console.warn(DEFINE.NAME, `Missing ${filename}`)
                 return null
             }
 
@@ -285,14 +285,14 @@ export default defineComponent({
         const specIcons = getSpecIcons()
         const getSpecIcon = (specName: string): unknown => {
             if (!playerClassID.value) {
-                console.warn(TAG, 'Missing player class')
+                console.warn(DEFINE.NAME, 'Missing player class')
                 return ''
             }
 
             const playerClassName = getClassName(playerClassID.value)
             const filename = `${playerClassName}-${specName}.jpg`.toLowerCase()
             if (!(filename in specIcons)) {
-                console.warn(TAG, `Missing ${filename}`)
+                console.warn(DEFINE.NAME, `Missing ${filename}`)
                 return null
             }
 

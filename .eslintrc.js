@@ -26,6 +26,7 @@ module.exports = {
 
     // Disable warnings for variables that are accessed but not defined in same file
     globals: {
+        DEFINE: 'readonly',
         GM: true,
         $: true,
         jQuery: true,

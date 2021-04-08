@@ -1,4 +1,4 @@
-import { Metric, Region, TAG, Tier } from '@/Constants'
+import { Metric, Region, Tier } from '@/Constants'
 
 // ----------------------------------------------------------------------------
 // Constants
@@ -74,19 +74,19 @@ function fetchFromWarcraftLogs<IResponseType>(url: string, errorMsg: string): Pr
                     if (response.status !== 200) {
                         const res = JSON.parse(response.responseText) as ErrorResponse
                         errorMsg += ` (${res.error}) [${res.status}]`
-                        console.warn(TAG, 'WarcraftLogsV1::onload', errorMsg, response, res)
+                        console.warn(DEFINE.NAME, 'WarcraftLogsV1::onload', errorMsg, response, res)
                         return reject(new Error(errorMsg))
                     }
 
                     const data = JSON.parse(response.responseText) as IResponseType
                     return resolve(data)
                 } catch (error) {
-                    console.warn(TAG, 'WarcraftLogsV1::onload', errorMsg, error)
+                    console.warn(DEFINE.NAME, 'WarcraftLogsV1::onload', errorMsg, error)
                     return reject(new Error(errorMsg))
                 }
             },
             onerror: (error) => {
-                console.warn(TAG, 'WarcraftLogsV1::onerror', errorMsg, error)
+                console.warn(DEFINE.NAME, 'WarcraftLogsV1::onerror', errorMsg, error)
                 return reject(error)
             },
         })

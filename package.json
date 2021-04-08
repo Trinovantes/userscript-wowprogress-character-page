@@ -5,6 +5,10 @@
     "author": "Stephen",
     "license": "AGPL-3.0-only",
     "version": "2.1.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Trinovantes/userscript-wowprogress-character-page"
+    },
     "private": true,
     "scripts": {
         "dev": "cross-env NODE_ENV=development webpack serve",

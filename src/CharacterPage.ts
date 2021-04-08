@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { Region, TAG } from '@/Constants'
+import { Region } from '@/Constants'
 import { createRootStore, key, RootState } from './store'
 import { Store } from 'vuex'
 
@@ -9,7 +9,7 @@ export default class CharacterPage {
     store: Store<RootState>
 
     constructor() {
-        console.info(TAG, 'CharacterPage::parse()')
+        console.info(DEFINE.NAME, 'CharacterPage::CharacterPage()')
 
         const href = $('a.armoryLink').attr('href')
         if (!href) {
@@ -33,12 +33,12 @@ export default class CharacterPage {
                 break
             }
             default: {
-                console.warn(TAG, 'Unknown locale', locale)
+                console.warn(DEFINE.NAME, 'Unknown locale', locale)
                 region = 'unknown'
             }
         }
 
-        console.info(TAG, 'CharacterPage::parsed()', `region:${region} realm:${realm} name:${characterName}`)
+        console.info(DEFINE.NAME, 'CharacterPage::CharacterPage()', `region:${region} realm:${realm} name:${characterName}`)
         this.store = createRootStore(region, realm, characterName)
     }
 

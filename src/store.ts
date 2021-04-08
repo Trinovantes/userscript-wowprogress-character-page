@@ -1,6 +1,6 @@
 import { InjectionKey } from 'vue'
 import { createStore, Store, useStore, MutationTree, ActionTree } from 'vuex'
-import { Difficulty, Metric, TAG, DEFAULT_DIFFICULTY, DEFAULT_METRIC } from '@/Constants'
+import { Difficulty, Metric, DEFAULT_DIFFICULTY, DEFAULT_METRIC } from '@/Constants'
 import { authenticate, fetchCharacterData, OptionalFilters, CharacterData } from '@/models/WarcraftLogsV2'
 
 const KEY_WCL_CLIENT_ID = 'KEY_WCL_CLIENT_ID'
@@ -91,7 +91,7 @@ export function createRootStore(region: string, realm: string, characterName: st
                 await GM.getValue(KEY_FILTER_DIFFICULTY, '') || DEFAULT_DIFFICULTY,
             ])
 
-            console.info(TAG, 'store::load', `clientId:${clientId.length} clientSecret:${clientSecret.length} accessToken:${accessToken.length} metricFilter:${metricFilter} difficultyFilter:${difficultyFilter}`)
+            console.info(DEFINE.NAME, 'store::load', `clientId:${clientId.length} clientSecret:${clientSecret.length} accessToken:${accessToken.length} metricFilter:${metricFilter} difficultyFilter:${difficultyFilter}`)
 
             commit('setClientId', clientId)
             commit('setClientSecret', clientSecret)
@@ -101,7 +101,7 @@ export function createRootStore(region: string, realm: string, characterName: st
         },
 
         async save({ state }): Promise<void> {
-            console.info(TAG, 'store::save', `clientId:${state.clientId.length} clientSecret:${state.clientSecret.length} accessToken:${state.accessToken.length} metricFilter:${state.metricFilter} difficultyFilter:${state.difficultyFilter}`)
+            console.info(DEFINE.NAME, 'store::save', `clientId:${state.clientId.length} clientSecret:${state.clientSecret.length} accessToken:${state.accessToken.length} metricFilter:${state.metricFilter} difficultyFilter:${state.difficultyFilter}`)
 
             await Promise.all([
                 GM.setValue(KEY_WCL_CLIENT_ID, state.clientId),
@@ -113,7 +113,7 @@ export function createRootStore(region: string, realm: string, characterName: st
         },
 
         async reset({ commit, dispatch }): Promise<void> {
-            console.info(TAG, 'store::reset')
+            console.info(DEFINE.NAME, 'store::reset')
             commit('setClientId', '')
             commit('setClientSecret', '')
             commit('setAccessToken', '')
