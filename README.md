@@ -2,11 +2,11 @@
 
 ![](.github/img/preview.png)
 
-When I used to recruit for a World of Warcraft raiding guild, I was vetting players looking for guilds on [WoWProgress](https://www.wowprogress.com/) with their [Logs](https://www.warcraftlogs.com/) and (ocassionally) [Raider.io](https://raider.io/). However, this process was extremely tedious so I wrote this Userscript that automatically embeds third-party information inside of each character's WoWProgress page.
+When I used to recruit for a World of Warcraft raiding guild, I was vetting players looking for guilds on [WoWProgress](https://www.wowprogress.com/) with their [Logs](https://www.warcraftlogs.com/) and [Raider.io](https://raider.io/). However, this process was extremely tedious so I wrote this Userscript that automatically embeds third-party information inside of each character's WoWProgress page.
 
-**Note:** This project is not affiliated with any of the other websites mentioned in this guide.
+**Note:** This project is not affiliated with any of the websites mentioned in this guide.
 
-# Installation Guide
+## Installation Guide
 
 1. Install a Userscript manager for your web browser
     * [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) (Firefox)
@@ -18,14 +18,14 @@ When I used to recruit for a World of Warcraft raiding guild, I was vetting play
 
     * The name field can be whatever you want but I suggest using a descriptive name to help the Warcraft Logs developers to identify your usage
     * The redirect URL doesn't matter for our purpose so it can just be any valid URL (e.g. `https://www.wowprogress.com`)
-    * Do **not** enable PKCE
+    * Do not enable public client
     * Once successful, the site should give you a client id and secret
     
 4. Open a new tab to WoWProgress and navigate to any character page. You will be asked to enter your client id and secret that you obtained in the previous step.
 
-# Dev Guide
+## Dev Guide
 
-1. Install prereq
+1. Install prereqs
 
     * `node`
     * `yarn`
@@ -48,7 +48,7 @@ When I used to recruit for a World of Warcraft raiding guild, I was vetting play
 
     * Go to `http://localhost:8080/userscript-wowprogress-character-page.proxy.user.js` and install the script
 
-# FAQ
+## FAQ
 
 ### Will you implement X feature?
 
