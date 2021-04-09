@@ -29,7 +29,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .credit{
-    margin: $margin 0;
+    margin: $padding 0;
 
     a{
         text-decoration: none;

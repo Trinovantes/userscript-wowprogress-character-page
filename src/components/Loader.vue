@@ -20,7 +20,7 @@ export default defineComponent({
 
     border: 1em solid rgba(white, 0.2);
     border-left-color: white;
-    margin: $margin auto;
+    margin: $padding auto;
     text-indent: -9999em;
 
     transform: translateZ(0);

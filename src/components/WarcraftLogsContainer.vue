@@ -97,7 +97,7 @@ export default defineComponent({
 <style lang="scss">
 .warcraftlogs{
     border: $border;
-    padding: $margin;
+    padding: $padding;
 
     h1,
     h2,
@@ -109,7 +109,7 @@ export default defineComponent({
     .notice,
     .btn-group,
     .raid-ranking{
-        margin: $margin 0;
+        margin: $padding 0;
 
         &:first-child{
             margin-top: 0;
@@ -121,8 +121,8 @@ export default defineComponent({
 
     h1{
         margin: 0;
-        margin: $margin 0;
-        line-height: $margin * 2;
+        margin: $padding 0;
+        line-height: $padding * 2;
 
         a{
             display: block;
@@ -136,8 +136,8 @@ export default defineComponent({
                 display: block;
                 float: left;
                 margin-right: 10px;
-                width: $margin * 2;
-                height: $margin * 2;
+                width: $padding * 2;
+                height: $padding * 2;
             }
         }
     }
@@ -145,7 +145,7 @@ export default defineComponent({
     .notice{
         color: white;
         display: block;
-        padding: $margin;
+        padding: $padding;
 
         &.warning{
             background: black;
@@ -162,7 +162,7 @@ export default defineComponent({
             grid-template-columns: 1fr 5fr;
 
             input{
-                padding: ($margin / 2)
+                padding: ($padding / 2)
             }
         }
     }
@@ -173,7 +173,7 @@ export default defineComponent({
         color: white;
         cursor: pointer;
         display: block;
-        padding: ($margin / 2) $margin;
+        padding: ($padding / 2) $padding;
         transition: 0.25s;
 
         &:hover{
@@ -188,7 +188,7 @@ export default defineComponent({
 
     .btn-group{
         display: flex;
-        gap: $margin;
+        gap: $padding;
 
         a.btn{
             flex: 1;
@@ -198,11 +198,11 @@ export default defineComponent({
 
     .raid{
         border: $border;
-        padding: $margin;
+        padding: $padding;
 
         h2{
             margin: 0;
-            margin-bottom: $margin / 2;
+            margin-bottom: $padding / 2;
         }
     }
 }

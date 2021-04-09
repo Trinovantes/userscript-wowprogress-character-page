@@ -358,7 +358,7 @@ function getSpecIcons(): { [key: string]: unknown } {
 <style lang="scss">
 .raid-ranking{
     h2{
-        margin: $margin 0;
+        margin: $padding 0;
     }
 
     table{
@@ -386,7 +386,7 @@ function getSpecIcons(): { [key: string]: unknown } {
                 &.boss-name{
                     display: grid;
                     grid-template-columns: $height 1fr;
-                    gap: $margin;
+                    gap: $padding;
                 }
 
                 &.metric{
