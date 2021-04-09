@@ -255,7 +255,7 @@ const actions: ActionTree<RootState, RootState> & Actions = {
 // ----------------------------------------------------------------------------
 
 export function createRootStore(region: string, realm: string, characterName: string): Store<RootState> {
-    const state = () => {
+    const createDefaultState = () => {
         const defaultState: RootState = {
             isLoading: false,
             errorMessage: '',
@@ -277,7 +277,8 @@ export function createRootStore(region: string, realm: string, characterName: st
     }
 
     return createStore<RootState>({
-        state,
+        strict: DEFINE.IS_DEV,
+        state: createDefaultState,
         mutations,
         actions,
     })
