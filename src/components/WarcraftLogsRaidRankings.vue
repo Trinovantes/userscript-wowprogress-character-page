@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isLoading">
+    <div v-if="!isLoading && !hasErrors">
         <div class="btn-group">
             <a
                 v-for="metric of Object.values(Metric)"
@@ -188,6 +188,7 @@ export default defineComponent({
     setup() {
         const store = useTypedStore()
         const isLoading = computed(() => store.state.isLoading)
+        const hasErrors = computed(() => store.state.errorMessage)
         const characterData = computed(() => store.state.characterData)
         const playerClassID = computed(() => characterData.value?.classID)
 
@@ -310,6 +311,7 @@ export default defineComponent({
 
         return {
             isLoading,
+            hasErrors,
 
             getTierName,
             getRaidProgress,
