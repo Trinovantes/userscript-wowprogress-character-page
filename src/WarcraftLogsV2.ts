@@ -1,4 +1,4 @@
-import { CurrentTiers, Difficulty, getDifficultyID, Metric, Region, Tier } from '@/Constants'
+import { CurrentTiers, Difficulty, getDifficultyID, Metric, Region, Tier } from './Constants'
 
 // ----------------------------------------------------------------------------
 // Constants

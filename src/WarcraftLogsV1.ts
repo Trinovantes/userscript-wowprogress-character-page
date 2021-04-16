@@ -1,4 +1,4 @@
-import { Metric, Region, Tier } from '@/Constants'
+import { Metric, Region, Tier } from './Constants'
 
 // ----------------------------------------------------------------------------
 // Constants

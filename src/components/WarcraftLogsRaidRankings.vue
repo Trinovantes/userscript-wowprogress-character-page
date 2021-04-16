@@ -180,7 +180,7 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from 'vue'
 import { Specs, Metric, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
-import { TierInfo, OptionalFilters } from '@/models/WarcraftLogsV2'
+import { TierInfo, OptionalFilters } from '@/WarcraftLogsV2'
 import { RootAction, RootMutation, useTypedStore } from '@/store'
 import { formatPercent, formatNum, getRankColor } from '@/utils'
 
