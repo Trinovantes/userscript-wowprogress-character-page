@@ -1,8 +1,8 @@
-import '@/assets/css/main.scss'
-import { Region } from '@/Constants'
-import { createRootStore, key } from '@/store'
+import './assets/css/main.scss'
+import { Region } from './Constants'
+import { createRootStore, key } from './store'
 import { createApp } from 'vue'
-import UserscriptApp from '@/components/UserscriptApp.vue'
+import UserscriptApp from './components/UserscriptApp.vue'
 
 async function main() {
     await $.when($.ready)
