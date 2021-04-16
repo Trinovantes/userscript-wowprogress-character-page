@@ -298,8 +298,8 @@ export type TypedStore = Omit<Store<RootState>, 'commit' | 'dispatch'> & {
     ): ReturnType<Actions[K]>
 }
 
-// eslint-disable-next-line symbol-description
-export const key: InjectionKey<Store<RootState>> = Symbol()
+export const key: InjectionKey<TypedStore> = Symbol('Vuex InjectionKey')
+
 export function useTypedStore(): TypedStore {
     return useStore(key)
 }
