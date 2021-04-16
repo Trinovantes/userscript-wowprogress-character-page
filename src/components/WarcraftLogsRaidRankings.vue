@@ -179,7 +179,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from 'vue'
-import { Specs, Metric, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
+import { specs, Metric, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
 import { TierInfo, OptionalFilters } from '@/WarcraftLogsV2'
 import { RootAction, RootMutation, useTypedStore } from '@/store'
 import { formatPercent, formatNum, getRankColor } from '@/utils'
@@ -190,7 +190,7 @@ export default defineComponent({
         const isLoading = computed(() => store.state.isLoading)
         const hasErrors = computed(() => store.state.errorMessage)
         const characterData = computed(() => store.state.characterData)
-        const playerClassID = computed(() => characterData.value?.classID)
+        const playerClassId = computed(() => characterData.value?.classID)
 
         const fetch = async() => {
             const optionalFilters: OptionalFilters = {
@@ -286,12 +286,12 @@ export default defineComponent({
 
         const specIcons = getSpecIcons()
         const getSpecIcon = (specName: string): unknown => {
-            if (!playerClassID.value) {
+            if (!playerClassId.value) {
                 console.warn(DEFINE.NAME, 'Missing player class')
                 return ''
             }
 
-            const playerClassName = getClassName(playerClassID.value)
+            const playerClassName = getClassName(playerClassId.value)
             const filename = `${playerClassName}-${specName}.jpg`.toLowerCase()
             if (!(filename in specIcons)) {
                 console.warn(DEFINE.NAME, `Missing ${filename}`)
@@ -302,11 +302,11 @@ export default defineComponent({
         }
 
         const playerSpecs = computed(() => {
-            if (!playerClassID.value) {
+            if (!playerClassId.value) {
                 return []
             }
 
-            return Specs[getClassName(playerClassID.value)]
+            return specs[getClassName(playerClassId.value)]
         })
 
         return {

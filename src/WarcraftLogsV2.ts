@@ -1,4 +1,4 @@
-import { CurrentTiers, Difficulty, getDifficultyID, Metric, Region, Tier } from './Constants'
+import { currentTiers, Difficulty, getDifficultyId, Metric, Region, Tier } from './Constants'
 
 // ----------------------------------------------------------------------------
 // Constants
@@ -126,16 +126,16 @@ export async function authenticate(clientId: string, clientSecret: string): Prom
 
 export async function fetchCharacterData(accessToken: string, region: Region, realm: string, name: string, optionalFilters?: OptionalFilters): Promise<CharacterData | undefined> {
     let zoneRankingQueryString = ''
-    for (const zoneKey of CurrentTiers) {
+    for (const zoneKey of currentTiers) {
         const re = /^T(\d+)$/
         const matches = re.exec(zoneKey)
         if (!matches) {
             continue
         }
 
-        const zoneID = parseInt(matches[1])
+        const zoneId = parseInt(matches[1])
         zoneRankingQueryString += `${zoneKey}: zoneRankings(`
-        zoneRankingQueryString += `zoneID: ${zoneID}, partition: -1`
+        zoneRankingQueryString += `zoneID: ${zoneId}, partition: -1`
 
         if (optionalFilters?.metric) {
             zoneRankingQueryString += `, metric:${optionalFilters.metric}`
@@ -144,7 +144,7 @@ export async function fetchCharacterData(accessToken: string, region: Region, re
             zoneRankingQueryString += `, specName:"${optionalFilters.specName}"`
         }
         if (optionalFilters?.difficulty) {
-            zoneRankingQueryString += `, difficulty:${getDifficultyID(optionalFilters.difficulty)}`
+            zoneRankingQueryString += `, difficulty:${getDifficultyId(optionalFilters.difficulty)}`
         }
 
         zoneRankingQueryString += ')'

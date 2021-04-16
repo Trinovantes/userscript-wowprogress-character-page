@@ -32,7 +32,7 @@ export function getTierName(tier: Tier): string {
     }
 }
 
-export const CurrentTiers = [
+export const currentTiers = [
     Tier.T26,
 ]
 
@@ -56,7 +56,7 @@ export function getDifficultyShortName(difficulty: Difficulty): string {
     }
 }
 
-export function getDifficultyID(difficulty: Difficulty): number {
+export function getDifficultyId(difficulty: Difficulty): number {
     switch (difficulty) {
         case Difficulty.LFR: return 1
         case Difficulty.NORMAL: return 3
@@ -93,8 +93,8 @@ export enum WowClass {
     DemonHunter = 'demonhunter',
 }
 
-export function getClassName(classID: number): WowClass {
-    switch (classID) {
+export function getClassName(classId: number): WowClass {
+    switch (classId) {
         case 1: return WowClass.DeathKnight
         case 2: return WowClass.Druid
         case 3: return WowClass.Hunter
@@ -118,7 +118,7 @@ export interface SpecInfo {
     role: string
 }
 
-export const Specs: { [key in WowClass]: Array<SpecInfo> } = {
+export const specs: { [key in WowClass]: Array<SpecInfo> } = {
     [WowClass.Unknown]: [],
     [WowClass.DeathKnight]: [
         {
