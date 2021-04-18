@@ -286,7 +286,7 @@ export default defineComponent({
 
         const specIcons = getSpecIcons()
         const getSpecIcon = (specName: string): unknown => {
-            if (!playerClassId.value) {
+            if (playerClassId.value === undefined) {
                 console.warn(DEFINE.NAME, 'Missing player class')
                 return ''
             }
@@ -302,7 +302,7 @@ export default defineComponent({
         }
 
         const playerSpecs = computed(() => {
-            if (!playerClassId.value) {
+            if (playerClassId.value === undefined) {
                 return []
             }
 

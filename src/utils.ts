@@ -23,7 +23,7 @@ export function formatNum(val: number): string {
 }
 
 export function getRankColor(rank: number | undefined): string {
-    if (!rank || isNaN(rank)) {
+    if (rank === undefined || isNaN(rank)) {
         return 'inherit'
     }
 
