@@ -335,7 +335,7 @@ export default defineComponent({
 })
 
 function getBossIcons(): { [key: string]: unknown } {
-    const imgReq = require.context('@/assets/img/bosses', true, /\.(jpe?g|png|gif|svg)$/i)
+    const imgReq = require.context('@/assets/img/bosses', true, /(26)\/.*\.(jpe?g|png|gif|svg)$/i)
     const images: { [key: string]: unknown } = {}
 
     for (const filename of imgReq.keys()) {
