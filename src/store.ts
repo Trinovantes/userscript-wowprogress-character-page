@@ -1,5 +1,3 @@
-/* eslint-disable no-use-before-define */
-
 import { InjectionKey } from 'vue'
 import { createStore, Store, useStore, MutationTree, ActionTree, CommitOptions, DispatchOptions, ActionContext } from 'vuex'
 import { Difficulty, Metric, DEFAULT_DIFFICULTY, DEFAULT_METRIC } from './Constants'
@@ -48,15 +46,15 @@ export enum RootMutation {
     SET_CHARACTER_DATA = 'SET_CHARACTER_DATA',
 }
 
-type Mutations<S = RootState> = {
-    [RootMutation.SET_IS_LOADING]: (state: S, payload?: boolean) => void
-    [RootMutation.SET_ERROR_MESSAGE]: (state: S, payload?: string) => void
-    [RootMutation.SET_CLIENT_ID]: (state: S, payload?: string) => void
-    [RootMutation.SET_CLIENT_SECRET]: (state: S, payload?: string) => void
-    [RootMutation.SET_ACCESS_TOKEN]: (state: S, payload?: string) => void
-    [RootMutation.SET_METRIC_FILTER]: (state: S, payload?: Metric) => void
-    [RootMutation.SET_DIFFICULTY_FILTER]: (state: S, payload?: Difficulty) => void
-    [RootMutation.SET_CHARACTER_DATA]: (state: S, payload?: CharacterData) => void
+interface Mutations {
+    [RootMutation.SET_IS_LOADING]: (state: RootState, payload?: boolean) => void
+    [RootMutation.SET_ERROR_MESSAGE]: (state: RootState, payload?: string) => void
+    [RootMutation.SET_CLIENT_ID]: (state: RootState, payload?: string) => void
+    [RootMutation.SET_CLIENT_SECRET]: (state: RootState, payload?: string) => void
+    [RootMutation.SET_ACCESS_TOKEN]: (state: RootState, payload?: string) => void
+    [RootMutation.SET_METRIC_FILTER]: (state: RootState, payload?: Metric) => void
+    [RootMutation.SET_DIFFICULTY_FILTER]: (state: RootState, payload?: Difficulty) => void
+    [RootMutation.SET_CHARACTER_DATA]: (state: RootState, payload?: CharacterData) => void
 }
 
 const mutations: MutationTree<RootState> & Mutations = {
@@ -138,6 +136,7 @@ export enum RootAction {
     FETCH_CHARACTER_DATA = 'FETCH_CHARACTER_DATA',
 }
 
+/* eslint-disable no-use-before-define */
 type AugmentedActionContext = {
     commit<K extends keyof Mutations>(
         key: K,
@@ -278,16 +277,17 @@ export function createRootStore(region: string, realm: string, characterName: st
 
     return createStore<RootState>({
         strict: DEFINE.IS_DEV,
+
         state: createDefaultState,
         mutations,
         actions,
     })
 }
 
-export type TypedStore = Omit<Store<RootState>, 'commit' | 'dispatch'> & {
-    commit<K extends keyof Mutations, P extends Parameters<Mutations[K]>[1]>(
+type TypedStore = Omit<Store<RootState>, 'commit' | 'dispatch'> & {
+    commit<K extends keyof Mutations>(
         key: K,
-        payload?: P,
+        payload?: Parameters<Mutations[K]>[1],
         options?: CommitOptions
     ): ReturnType<Mutations[K]>
 } & {
