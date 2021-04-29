@@ -1,11 +1,10 @@
 <template>
-    <div>
-        <WarcraftLogsContainer />
-        <div class="credit">
-            <a :href="projectUrl">
-                {{ title }}
-            </a>
-        </div>
+    <WarcraftLogsContainer />
+
+    <div class="credit">
+        <a :href="projectUrl">
+            {{ title }}
+        </a>
     </div>
 </template>
 
