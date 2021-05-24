@@ -162,7 +162,7 @@ export default defineComponent({
             grid-template-columns: 1fr 5fr;
 
             input{
-                padding: ($padding / 2)
+                padding: math.div($padding, 2)
             }
         }
     }
@@ -173,7 +173,7 @@ export default defineComponent({
         color: white;
         cursor: pointer;
         display: block;
-        padding: ($padding / 2) $padding;
+        padding: math.div($padding, 2) $padding;
         transition: 0.25s;
 
         &:hover{
@@ -202,7 +202,7 @@ export default defineComponent({
 
         h2{
             margin: 0;
-            margin-bottom: $padding / 2;
+            margin-bottom: math.div($padding, 2);
         }
     }
 }
