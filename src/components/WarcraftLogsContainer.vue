@@ -52,7 +52,7 @@ import { computed, defineComponent } from 'vue'
 import Loader from './Loader.vue'
 import WarcraftLogsAuth from './WarcraftLogsAuth.vue'
 import WarcraftLogsRaidRankings from './WarcraftLogsRaidRankings.vue'
-import { RootAction, useTypedStore } from '@/store'
+import { Action, useTypedStore } from '@/store'
 
 export default defineComponent({
     components: {
@@ -72,11 +72,11 @@ export default defineComponent({
         const accessToken = computed(() => store.state.accessToken)
 
         const resetAccessToken = async() => {
-            await store.dispatch(RootAction.RESET_ACCESS_TOKEN)
+            await store.dispatch(Action.RESET_ACCESS_TOKEN)
         }
 
         const resetEverything = async() => {
-            await store.dispatch(RootAction.RESET_EVERYTHING)
+            await store.dispatch(Action.RESET_EVERYTHING)
         }
 
         return {

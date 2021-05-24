@@ -1,5 +1,5 @@
 import { InjectionKey } from 'vue'
-import { createStore, Store, useStore, MutationTree, ActionTree, CommitOptions, DispatchOptions, ActionContext } from 'vuex'
+import { createStore as _createStore, Store, useStore, MutationTree, ActionTree, CommitOptions, DispatchOptions, ActionContext } from 'vuex'
 import { Difficulty, Metric, DEFAULT_DIFFICULTY, DEFAULT_METRIC } from './Constants'
 import { authenticate, fetchCharacterData, OptionalFilters, CharacterData } from './WarcraftLogsV2'
 import { sleep } from './utils'
@@ -14,7 +14,7 @@ const KEY_FILTER_DIFFICULTY = 'KEY_FILTER_DIFFICULTY'
 // State
 // ----------------------------------------------------------------------------
 
-export interface RootState {
+export interface State {
     isLoading: boolean
     errorMessage: string
 
@@ -35,7 +35,7 @@ export interface RootState {
 // Mutations
 // ----------------------------------------------------------------------------
 
-export enum RootMutation {
+export enum Mutation {
     SET_IS_LOADING = 'SET_IS_LOADING',
     SET_ERROR_MESSAGE = 'SET_ERROR_MESSAGE',
     SET_CLIENT_ID = 'SET_CLIENT_ID',
@@ -47,18 +47,18 @@ export enum RootMutation {
 }
 
 interface Mutations {
-    [RootMutation.SET_IS_LOADING]: (state: RootState, payload?: boolean) => void
-    [RootMutation.SET_ERROR_MESSAGE]: (state: RootState, payload?: string) => void
-    [RootMutation.SET_CLIENT_ID]: (state: RootState, payload?: string) => void
-    [RootMutation.SET_CLIENT_SECRET]: (state: RootState, payload?: string) => void
-    [RootMutation.SET_ACCESS_TOKEN]: (state: RootState, payload?: string) => void
-    [RootMutation.SET_METRIC_FILTER]: (state: RootState, payload?: Metric) => void
-    [RootMutation.SET_DIFFICULTY_FILTER]: (state: RootState, payload?: Difficulty) => void
-    [RootMutation.SET_CHARACTER_DATA]: (state: RootState, payload?: CharacterData) => void
+    [Mutation.SET_IS_LOADING]: (state: State, payload?: boolean) => void
+    [Mutation.SET_ERROR_MESSAGE]: (state: State, payload?: string) => void
+    [Mutation.SET_CLIENT_ID]: (state: State, payload?: string) => void
+    [Mutation.SET_CLIENT_SECRET]: (state: State, payload?: string) => void
+    [Mutation.SET_ACCESS_TOKEN]: (state: State, payload?: string) => void
+    [Mutation.SET_METRIC_FILTER]: (state: State, payload?: Metric) => void
+    [Mutation.SET_DIFFICULTY_FILTER]: (state: State, payload?: Difficulty) => void
+    [Mutation.SET_CHARACTER_DATA]: (state: State, payload?: CharacterData) => void
 }
 
-const mutations: MutationTree<RootState> & Mutations = {
-    [RootMutation.SET_IS_LOADING]: (state: RootState, payload?: boolean) => {
+const mutations: MutationTree<State> & Mutations = {
+    [Mutation.SET_IS_LOADING]: (state: State, payload?: boolean) => {
         if (payload === undefined) {
             throw new Error('Missing Payload')
         }
@@ -66,7 +66,7 @@ const mutations: MutationTree<RootState> & Mutations = {
         state.isLoading = payload
     },
 
-    [RootMutation.SET_ERROR_MESSAGE]: (state: RootState, payload?: string) => {
+    [Mutation.SET_ERROR_MESSAGE]: (state: State, payload?: string) => {
         if (payload === undefined) {
             throw new Error('Missing Payload')
         }
@@ -74,7 +74,7 @@ const mutations: MutationTree<RootState> & Mutations = {
         state.errorMessage = payload.trim()
     },
 
-    [RootMutation.SET_CLIENT_ID]: (state: RootState, payload?: string) => {
+    [Mutation.SET_CLIENT_ID]: (state: State, payload?: string) => {
         if (payload === undefined) {
             throw new Error('Missing Payload')
         }
@@ -82,7 +82,7 @@ const mutations: MutationTree<RootState> & Mutations = {
         state.clientId = payload.trim()
     },
 
-    [RootMutation.SET_CLIENT_SECRET]: (state: RootState, payload?: string) => {
+    [Mutation.SET_CLIENT_SECRET]: (state: State, payload?: string) => {
         if (payload === undefined) {
             throw new Error('Missing Payload')
         }
@@ -90,7 +90,7 @@ const mutations: MutationTree<RootState> & Mutations = {
         state.clientSecret = payload.trim()
     },
 
-    [RootMutation.SET_ACCESS_TOKEN]: (state: RootState, payload?: string) => {
+    [Mutation.SET_ACCESS_TOKEN]: (state: State, payload?: string) => {
         if (payload === undefined) {
             throw new Error('Missing Payload')
         }
@@ -98,7 +98,7 @@ const mutations: MutationTree<RootState> & Mutations = {
         state.accessToken = payload.trim()
     },
 
-    [RootMutation.SET_METRIC_FILTER]: (state: RootState, payload?: Metric) => {
+    [Mutation.SET_METRIC_FILTER]: (state: State, payload?: Metric) => {
         if (payload === undefined) {
             throw new Error('Missing Payload')
         }
@@ -106,7 +106,7 @@ const mutations: MutationTree<RootState> & Mutations = {
         state.metricFilter = payload
     },
 
-    [RootMutation.SET_DIFFICULTY_FILTER]: (state: RootState, payload?: Difficulty) => {
+    [Mutation.SET_DIFFICULTY_FILTER]: (state: State, payload?: Difficulty) => {
         if (payload === undefined) {
             throw new Error('Missing Payload')
         }
@@ -114,7 +114,7 @@ const mutations: MutationTree<RootState> & Mutations = {
         state.difficultyFilter = payload
     },
 
-    [RootMutation.SET_CHARACTER_DATA]: (state: RootState, payload?: CharacterData) => {
+    [Mutation.SET_CHARACTER_DATA]: (state: State, payload?: CharacterData) => {
         if (payload === undefined) {
             throw new Error('Missing Payload')
         }
@@ -127,7 +127,7 @@ const mutations: MutationTree<RootState> & Mutations = {
 // Actions
 // ----------------------------------------------------------------------------
 
-export enum RootAction {
+export enum Action {
     LOAD = 'LOAD',
     SAVE = 'SAVE',
     RESET_ACCESS_TOKEN = 'RESET_ACCESS_TOKEN',
@@ -136,29 +136,32 @@ export enum RootAction {
     FETCH_CHARACTER_DATA = 'FETCH_CHARACTER_DATA',
 }
 
-/* eslint-disable no-use-before-define */
-type AugmentedActionContext = {
+type TypedActionContext = Omit<ActionContext<State, State>, 'commit' | 'dispatch' | 'getters' | 'rootState' | 'rootGetters'> & {
     commit<K extends keyof Mutations>(
         key: K,
         payload?: Parameters<Mutations[K]>[1]
     ): ReturnType<Mutations[K]>
+
+    // eslint-disable-next-line no-use-before-define
     dispatch<K extends keyof Actions>(
         key: K,
+        // eslint-disable-next-line no-use-before-define
         payload?: Parameters<Actions[K]>[1]
+    // eslint-disable-next-line no-use-before-define
     ): ReturnType<Actions[K]>
-} & Omit<ActionContext<RootState, RootState>, 'commit' | 'dispatch'>
-
-interface Actions {
-    [RootAction.LOAD]: (context: AugmentedActionContext) => Promise<void>
-    [RootAction.SAVE]: (context: AugmentedActionContext) => Promise<void>
-    [RootAction.RESET_ACCESS_TOKEN]: (context: AugmentedActionContext) => Promise<void>
-    [RootAction.RESET_EVERYTHING]: (context: AugmentedActionContext) => Promise<void>
-    [RootAction.AUTHENTICATE]: (context: AugmentedActionContext) => Promise<void>
-    [RootAction.FETCH_CHARACTER_DATA]: (context: AugmentedActionContext, optionalFilters: OptionalFilters) => Promise<void>
 }
 
-const actions: ActionTree<RootState, RootState> & Actions = {
-    [RootAction.LOAD]: async({ commit }): Promise<void> => {
+interface Actions {
+    [Action.LOAD]: (context: TypedActionContext) => Promise<void>
+    [Action.SAVE]: (context: TypedActionContext) => Promise<void>
+    [Action.RESET_ACCESS_TOKEN]: (context: TypedActionContext) => Promise<void>
+    [Action.RESET_EVERYTHING]: (context: TypedActionContext) => Promise<void>
+    [Action.AUTHENTICATE]: (context: TypedActionContext) => Promise<void>
+    [Action.FETCH_CHARACTER_DATA]: (context: TypedActionContext, optionalFilters?: OptionalFilters) => Promise<void>
+}
+
+const actions: ActionTree<State, State> & Actions = {
+    [Action.LOAD]: async({ commit }): Promise<void> => {
         const [clientId, clientSecret, accessToken, metricFilter, difficultyFilter] = await Promise.all([
             await GM.getValue(KEY_WCL_CLIENT_ID, '') ?? '',
             await GM.getValue(KEY_WCL_CLIENT_SECRET, '') ?? '',
@@ -169,14 +172,14 @@ const actions: ActionTree<RootState, RootState> & Actions = {
 
         console.info(DEFINE.NAME, 'store::load', `clientId:${clientId.length} clientSecret:${clientSecret.length} accessToken:${accessToken.length} metricFilter:${metricFilter} difficultyFilter:${difficultyFilter}`)
 
-        commit(RootMutation.SET_CLIENT_ID, clientId)
-        commit(RootMutation.SET_CLIENT_SECRET, clientSecret)
-        commit(RootMutation.SET_ACCESS_TOKEN, accessToken)
-        commit(RootMutation.SET_METRIC_FILTER, metricFilter as Metric)
-        commit(RootMutation.SET_DIFFICULTY_FILTER, difficultyFilter as Difficulty)
+        commit(Mutation.SET_CLIENT_ID, clientId)
+        commit(Mutation.SET_CLIENT_SECRET, clientSecret)
+        commit(Mutation.SET_ACCESS_TOKEN, accessToken)
+        commit(Mutation.SET_METRIC_FILTER, metricFilter as Metric)
+        commit(Mutation.SET_DIFFICULTY_FILTER, difficultyFilter as Difficulty)
     },
 
-    [RootAction.SAVE]: async({ state }): Promise<void> => {
+    [Action.SAVE]: async({ state }): Promise<void> => {
         console.info(DEFINE.NAME, 'store::save', `clientId:${state.clientId.length} clientSecret:${state.clientSecret.length} accessToken:${state.accessToken.length} metricFilter:${state.metricFilter} difficultyFilter:${state.difficultyFilter}`)
 
         await Promise.all([
@@ -188,25 +191,25 @@ const actions: ActionTree<RootState, RootState> & Actions = {
         ])
     },
 
-    [RootAction.RESET_ACCESS_TOKEN]: async({ commit, dispatch }): Promise<void> => {
+    [Action.RESET_ACCESS_TOKEN]: async({ commit, dispatch }): Promise<void> => {
         console.info(DEFINE.NAME, 'store::resetEverything')
-        commit(RootMutation.SET_ACCESS_TOKEN, '')
-        await dispatch(RootAction.SAVE)
+        commit(Mutation.SET_ACCESS_TOKEN, '')
+        await dispatch(Action.SAVE)
     },
 
-    [RootAction.RESET_EVERYTHING]: async({ commit, dispatch }): Promise<void> => {
+    [Action.RESET_EVERYTHING]: async({ commit, dispatch }): Promise<void> => {
         console.info(DEFINE.NAME, 'store::resetEverything')
-        commit(RootMutation.SET_CLIENT_ID, '')
-        commit(RootMutation.SET_CLIENT_SECRET, '')
-        commit(RootMutation.SET_ACCESS_TOKEN, '')
-        commit(RootMutation.SET_METRIC_FILTER, DEFAULT_METRIC)
-        commit(RootMutation.SET_DIFFICULTY_FILTER, DEFAULT_DIFFICULTY)
-        await dispatch(RootAction.SAVE)
+        commit(Mutation.SET_CLIENT_ID, '')
+        commit(Mutation.SET_CLIENT_SECRET, '')
+        commit(Mutation.SET_ACCESS_TOKEN, '')
+        commit(Mutation.SET_METRIC_FILTER, DEFAULT_METRIC)
+        commit(Mutation.SET_DIFFICULTY_FILTER, DEFAULT_DIFFICULTY)
+        await dispatch(Action.SAVE)
     },
 
-    [RootAction.AUTHENTICATE]: async({ state, commit, dispatch }): Promise<void> => {
-        commit(RootMutation.SET_IS_LOADING, true)
-        commit(RootMutation.SET_ERROR_MESSAGE, '')
+    [Action.AUTHENTICATE]: async({ state, commit, dispatch }): Promise<void> => {
+        commit(Mutation.SET_IS_LOADING, true)
+        commit(Mutation.SET_ERROR_MESSAGE, '')
 
         try {
             if (!state.clientId || !state.clientSecret) {
@@ -215,20 +218,20 @@ const actions: ActionTree<RootState, RootState> & Actions = {
             }
 
             const accessToken = await authenticate(state.clientId, state.clientSecret)
-            commit(RootMutation.SET_ACCESS_TOKEN, accessToken)
-            await dispatch(RootAction.SAVE)
+            commit(Mutation.SET_ACCESS_TOKEN, accessToken)
+            await dispatch(Action.SAVE)
         } catch (err) {
             const error = err as Error
-            commit(RootMutation.SET_ERROR_MESSAGE, error.message)
-            await dispatch(RootAction.RESET_EVERYTHING)
+            commit(Mutation.SET_ERROR_MESSAGE, error.message)
+            await dispatch(Action.RESET_EVERYTHING)
         } finally {
-            commit(RootMutation.SET_IS_LOADING, false)
+            commit(Mutation.SET_IS_LOADING, false)
         }
     },
 
-    [RootAction.FETCH_CHARACTER_DATA]: async({ state, commit }, optionalFilters?: OptionalFilters): Promise<void> => {
-        commit(RootMutation.SET_IS_LOADING, true)
-        commit(RootMutation.SET_ERROR_MESSAGE, '')
+    [Action.FETCH_CHARACTER_DATA]: async({ state, commit }, optionalFilters?: OptionalFilters): Promise<void> => {
+        commit(Mutation.SET_IS_LOADING, true)
+        commit(Mutation.SET_ERROR_MESSAGE, '')
 
         try {
             const region = state.region
@@ -238,13 +241,13 @@ const actions: ActionTree<RootState, RootState> & Actions = {
 
             const data = await fetchCharacterData(state.accessToken, region, state.realm, state.characterName, optionalFilters)
             if (data) {
-                commit(RootMutation.SET_CHARACTER_DATA, data)
+                commit(Mutation.SET_CHARACTER_DATA, data)
             }
         } catch (err) {
             const error = err as Error
-            commit(RootMutation.SET_ERROR_MESSAGE, error.message)
+            commit(Mutation.SET_ERROR_MESSAGE, error.message)
         } finally {
-            commit(RootMutation.SET_IS_LOADING, false)
+            commit(Mutation.SET_IS_LOADING, false)
         }
     },
 }
@@ -253,9 +256,9 @@ const actions: ActionTree<RootState, RootState> & Actions = {
 // Typescript Helpers
 // ----------------------------------------------------------------------------
 
-export function createRootStore(region: string, realm: string, characterName: string): Store<RootState> {
+export function createRootStore(region: string, realm: string, characterName: string): Store<State> {
     const createDefaultState = () => {
-        const defaultState: RootState = {
+        const defaultState: State = {
             isLoading: false,
             errorMessage: '',
 
@@ -275,7 +278,7 @@ export function createRootStore(region: string, realm: string, characterName: st
         return defaultState
     }
 
-    return createStore<RootState>({
+    return _createStore<State>({
         strict: DEFINE.IS_DEV,
 
         state: createDefaultState,
@@ -284,7 +287,7 @@ export function createRootStore(region: string, realm: string, characterName: st
     })
 }
 
-type TypedStore = Omit<Store<RootState>, 'commit' | 'dispatch'> & {
+type TypedStore = Omit<Store<State>, 'commit' | 'dispatch' | 'getters'> & {
     commit<K extends keyof Mutations>(
         key: K,
         payload?: Parameters<Mutations[K]>[1],

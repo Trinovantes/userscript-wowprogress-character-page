@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { RootAction, RootMutation, useTypedStore } from '@/store'
+import { Action, Mutation, useTypedStore } from '@/store'
 import { computed, defineComponent, onMounted } from 'vue'
 
 export default defineComponent({
@@ -51,7 +51,7 @@ export default defineComponent({
                 return store.state.clientId
             },
             set(val: string) {
-                store.commit(RootMutation.SET_CLIENT_ID, val)
+                store.commit(Mutation.SET_CLIENT_ID, val)
             },
         })
 
@@ -60,18 +60,18 @@ export default defineComponent({
                 return store.state.clientSecret
             },
             set(val: string) {
-                store.commit(RootMutation.SET_CLIENT_SECRET, val)
+                store.commit(Mutation.SET_CLIENT_SECRET, val)
             },
         })
 
         const onSubmit = async(event: Event) => {
             event.preventDefault()
-            await store.dispatch(RootAction.AUTHENTICATE)
+            await store.dispatch(Action.AUTHENTICATE)
         }
 
         onMounted(async() => {
-            await store.dispatch(RootAction.LOAD)
-            await store.dispatch(RootAction.AUTHENTICATE)
+            await store.dispatch(Action.LOAD)
+            await store.dispatch(Action.AUTHENTICATE)
         })
 
         return {
