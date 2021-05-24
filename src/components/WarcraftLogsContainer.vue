@@ -31,10 +31,10 @@
         <div class="btn-group">
             <a
                 class="btn"
-                title="This will attempt to reload all the data"
+                title="This will attempt to refresh all of the data"
                 @click="resetAccessToken"
             >
-                Reload
+                Refresh
             </a>
             <a
                 class="btn"
