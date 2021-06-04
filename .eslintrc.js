@@ -18,7 +18,6 @@ module.exports = {
     // Predefines global variables (e.g. browser env predefines 'window' variable)
     env: {
         browser: true,
-        node: true,
     },
 
     // Disable warnings for variables that are accessed but not defined in same file
