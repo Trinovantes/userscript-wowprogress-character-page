@@ -1,4 +1,4 @@
-import { currentTiers, Difficulty, getDifficultyId, Metric, Region, Tier } from './Constants'
+import { CURRENT_TIERS, Difficulty, getDifficultyId, Metric, Region, Tier } from './Constants'
 
 // ----------------------------------------------------------------------------
 // Constants
@@ -58,7 +58,7 @@ export interface TierInfo {
 export type CharacterData = {
     classID: number
 } & {
-    [key in Tier]?: TierInfo
+    [key in Tier]?: TierInfo | { error: string }
 }
 
 interface CharacterRankingsResponse {
@@ -126,7 +126,7 @@ export async function authenticate(clientId: string, clientSecret: string): Prom
 
 export async function fetchCharacterData(accessToken: string, region: Region, realm: string, name: string, optionalFilters?: OptionalFilters): Promise<CharacterData | undefined> {
     let zoneRankingQueryString = ''
-    for (const zoneKey of currentTiers) {
+    for (const zoneKey of CURRENT_TIERS) {
         const re = /^T(\d+)$/
         const matches = re.exec(zoneKey)
         if (!matches) {

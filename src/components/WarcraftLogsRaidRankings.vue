@@ -246,9 +246,20 @@ export default defineComponent({
 
             if (characterData.value) {
                 for (const [tier, tierInfo] of Object.entries(characterData.value)) {
-                    if (tier in Tier && typeof tierInfo === 'object') {
-                        tierInfos[tier as Tier] = tierInfo
+                    if (!(tier in Tier)) {
+                        continue
                     }
+
+                    if (!(typeof tierInfo === 'object')) {
+                        continue
+                    }
+
+                    if ('error' in tierInfo) {
+                        console.warn(tier, tierInfo.error)
+                        continue
+                    }
+
+                    tierInfos[tier as Tier] = tierInfo
                 }
             }
 
