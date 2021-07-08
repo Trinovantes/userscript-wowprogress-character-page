@@ -4,7 +4,7 @@
     "description": "Automatically embeds third-party information inside of each character's WoWProgress page",
     "author": "Stephen",
     "license": "AGPL-3.0-only",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/Trinovantes/userscript-wowprogress-character-page"
