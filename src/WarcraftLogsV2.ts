@@ -135,7 +135,7 @@ export async function fetchCharacterData(accessToken: string, region: Region, re
 
         const zoneId = parseInt(matches[1])
         zoneRankingQueryString += `${zoneKey}: zoneRankings(`
-        zoneRankingQueryString += `zoneID: ${zoneId}, partition: -1`
+        zoneRankingQueryString += `zoneID: ${zoneId}`
 
         if (optionalFilters?.metric) {
             zoneRankingQueryString += `, metric:${optionalFilters.metric}`
