@@ -68,7 +68,7 @@ function fetchFromWarcraftLogs<IResponseType>(url: string, errorMsg: string): Pr
     return new Promise((resolve, reject) => {
         GM.xmlHttpRequest({
             method: 'GET',
-            url: url,
+            url,
             onload: (response) => {
                 try {
                     if (response.status !== 200) {

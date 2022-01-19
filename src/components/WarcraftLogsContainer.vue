@@ -17,7 +17,7 @@
             {{ errorMessage }}
         </div>
 
-        <Loader
+        <SpinningLoader
             v-if="isLoading"
         />
 
@@ -49,14 +49,14 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import Loader from './Loader.vue'
+import SpinningLoader from './SpinningLoader.vue'
 import WarcraftLogsAuth from './WarcraftLogsAuth.vue'
 import WarcraftLogsRaidRankings from './WarcraftLogsRaidRankings.vue'
 import { Action, useTypedStore } from '@/store'
 
 export default defineComponent({
     components: {
-        Loader,
+        SpinningLoader,
         WarcraftLogsAuth,
         WarcraftLogsRaidRankings,
     },
