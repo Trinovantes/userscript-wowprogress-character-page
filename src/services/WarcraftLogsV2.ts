@@ -1,4 +1,4 @@
-import { CURRENT_TIERS, Difficulty, getDifficultyId, Metric, Region, Tier } from './Constants'
+import { CURRENT_TIERS, Difficulty, getDifficultyId, Metric, Region, Tier } from '../Constants'
 
 // ----------------------------------------------------------------------------
 // Constants

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { Difficulty, Metric, DEFAULT_DIFFICULTY, DEFAULT_METRIC } from './Constants'
-import { authenticate, fetchCharacterData, CharacterData, OptionalFilters } from './WarcraftLogsV2'
+import { authenticate, fetchCharacterData, CharacterData, OptionalFilters } from './services/WarcraftLogsV2'
 
 const KEY_WCL_CLIENT_ID = 'KEY_WCL_CLIENT_ID'
 const KEY_WCL_CLIENT_SECRET = 'KEY_WCL_CLIENT_SECRET'
