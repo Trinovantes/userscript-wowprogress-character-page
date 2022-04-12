@@ -1,12 +1,10 @@
 import './assets/css/main.scss'
-import { Region } from './Constants'
-import { createRootStore, key } from './store'
 import { createApp } from 'vue'
 import UserscriptApp from './components/UserscriptApp.vue'
+import { createPinia } from 'pinia'
+import { characterName, realm, region } from './store'
 
-async function main() {
-    await $.when($.ready)
-
+function parseCharacterInfo() {
     const href = $('a.armoryLink').attr('href')
     if (!href) {
         throw new Error('Failed to parse page')
@@ -14,18 +12,18 @@ async function main() {
 
     const fragments = href.split('/')
     const len = fragments.length
-    const characterName = decodeURIComponent(fragments[len - 1])
-    const realm = decodeURIComponent(fragments[len - 2]).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 
-    let region: Region
+    characterName.value = decodeURIComponent(fragments[len - 1])
+    realm.value = decodeURIComponent(fragments[len - 2]).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
     const locale = fragments[len - 4]
     switch (locale) {
         case 'en-us': {
-            region = 'us'
+            region.value = 'us'
             break
         }
         case 'en-gb': {
-            region = 'eu'
+            region.value = 'eu'
             break
         }
         default: {
@@ -33,15 +31,21 @@ async function main() {
         }
     }
 
-    console.info(DEFINE.NAME, `region:${region} realm:${realm} name:${characterName}`)
+    console.info(DEFINE.NAME, `region:${region.value} realm:${realm.value} name:${characterName.value}`)
+}
+
+async function main() {
+    await $.when($.ready)
+
+    parseCharacterInfo()
 
     const appContainerId = 'userscript-app'
     const $profile = $('.registeredTo')
     $profile.before(`<div id="${appContainerId}" />`)
 
-    const store = createRootStore(region, realm, characterName)
     const app = createApp(UserscriptApp)
-    app.use(store, key)
+    const pinia = createPinia()
+    app.use(pinia)
     app.mount(`#${appContainerId}`)
 }
 

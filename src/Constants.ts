@@ -31,7 +31,7 @@ export function getTierName(tier: Tier): string {
         case Tier.T29: return 'Sepulcher of the First Ones '
 
         default: {
-            return 'Unknown Tier'
+            return 'Unknown Tier Name'
         }
     }
 }

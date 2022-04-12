@@ -18,6 +18,7 @@
                 </li>
             </ul>
         </div>
+
         <label>
             <span>Client Id</span>
             <input
@@ -32,6 +33,7 @@
                 type="text"
             >
         </label>
+
         <button type="submit" class="btn">
             Authenticate
         </button>
@@ -39,40 +41,35 @@
 </template>
 
 <script lang="ts">
-import { Action, Mutation, useTypedStore } from '@/store'
-import { computed, defineComponent, onMounted } from 'vue'
+import { useStore } from '@/store'
+import { computed, defineComponent } from 'vue'
 
 export default defineComponent({
     setup() {
-        const store = useTypedStore()
+        const store = useStore()
 
         const clientId = computed({
             get() {
-                return store.state.clientId
+                return store.clientId
             },
             set(val: string) {
-                store.commit(Mutation.SET_CLIENT_ID, val)
+                store.clientId = val.trim()
             },
         })
 
         const clientSecret = computed({
             get() {
-                return store.state.clientSecret
+                return store.clientSecret
             },
             set(val: string) {
-                store.commit(Mutation.SET_CLIENT_SECRET, val)
+                store.clientSecret = val.trim()
             },
         })
 
         const onSubmit = async(event: Event) => {
             event.preventDefault()
-            await store.dispatch(Action.AUTHENTICATE)
+            await store.authenticate()
         }
-
-        onMounted(async() => {
-            await store.dispatch(Action.LOAD)
-            await store.dispatch(Action.AUTHENTICATE)
-        })
 
         return {
             clientId,

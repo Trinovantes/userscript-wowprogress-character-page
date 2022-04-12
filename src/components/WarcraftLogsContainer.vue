@@ -10,6 +10,10 @@
             </a>
         </h1>
 
+        <SpinningLoader
+            v-if="isLoading"
+        />
+
         <div
             v-if="errorMessage"
             class="notice error"
@@ -17,14 +21,10 @@
             {{ errorMessage }}
         </div>
 
-        <SpinningLoader
-            v-if="isLoading"
-        />
-
-        <WarcraftLogsAuth
-            v-if="!accessToken"
-        />
         <WarcraftLogsRaidRankings
+            v-if="accessToken"
+        />
+        <WarcraftLogsAuth
             v-else
         />
 
@@ -48,11 +48,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onMounted } from 'vue'
 import SpinningLoader from './SpinningLoader.vue'
 import WarcraftLogsAuth from './WarcraftLogsAuth.vue'
 import WarcraftLogsRaidRankings from './WarcraftLogsRaidRankings.vue'
-import { Action, useTypedStore } from '@/store'
+import { useStore, region, realm, characterName } from '@/store'
 
 export default defineComponent({
     components: {
@@ -62,29 +62,31 @@ export default defineComponent({
     },
 
     setup() {
-        const store = useTypedStore()
+        const store = useStore()
+        onMounted(async() => {
+            await store.load()
+            await store.authenticate()
+        })
 
-        const isLoading = computed(() => store.state.isLoading)
-        const errorMessage = computed(() => store.state.errorMessage)
-        const region = computed(() => store.state.region)
-        const realm = computed(() => store.state.realm)
-        const characterName = computed(() => store.state.characterName)
-        const accessToken = computed(() => store.state.accessToken)
+        const isLoading = computed(() => store.isLoading)
+        const errorMessage = computed(() => store.errorMessage)
+        const accessToken = computed(() => store.accessToken)
 
         const resetAccessToken = async() => {
-            await store.dispatch(Action.RESET_ACCESS_TOKEN)
+            await store.resetAccessToken()
         }
 
         const resetEverything = async() => {
-            await store.dispatch(Action.RESET_EVERYTHING)
+            await store.resetEverything()
         }
 
         return {
-            isLoading,
-            errorMessage,
             region,
             realm,
             characterName,
+
+            isLoading,
+            errorMessage,
             accessToken,
 
             resetAccessToken,
