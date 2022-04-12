@@ -1,5 +1,8 @@
 <template>
-    <div v-if="!isLoading && !hasErrors">
+    <div
+        v-if="!isLoading && !hasErrors"
+        class="raid-rankings"
+    >
         <div class="btn-group">
             <a
                 v-for="metric of Object.values(Metric)"
@@ -55,13 +58,13 @@
                 <thead>
                     <tr>
                         <td>
-                            Boss
+                            <!-- Boss -->
                         </td>
                         <td>
-                        <!-- Best Spec -->
+                            <!-- Best Spec -->
                         </td>
-                        <td class="metric">
-                            Best <span>{{ metricFilter }}</span>
+                        <td>
+                            Best <span style="text-transform: uppercase;">{{ metricFilter }}</span>
                         </td>
                         <td>
                             All Stars
@@ -351,10 +354,18 @@ function getSpecIcons() {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.raid-rankings{
+    display: grid;
+    gap: $padding;
+}
+
 .raid-ranking{
+    display: grid;
+    gap: $padding;
+
     h2{
-        margin: $padding 0;
+        font-size: 1.3rem;
     }
 
     table{
@@ -374,21 +385,13 @@ function getSpecIcons() {
                 line-height: $height;
                 text-align: right;
                 padding: 5px;
-
-                &:first-child{
-                    text-align: left;
-                }
+                vertical-align: middle;
 
                 &.boss-name{
                     display: grid;
                     grid-template-columns: $height 1fr;
                     gap: $padding;
-                }
-
-                &.metric{
-                    span{
-                        text-transform: uppercase;
-                    }
+                    text-align: left;
                 }
 
                 img{
@@ -397,13 +400,16 @@ function getSpecIcons() {
                     width: $height;
                 }
 
-                span.blank:before{
-                    content: '-';
-                    color: var(--common);
-
+                span{
                     display: inline-block;
                     height: $height;
-                    width: $height;
+                    line-height: $height;
+
+                    &.blank:before{
+                        content: '-';
+                        color: var(--common);
+                        width: $height;
+                    }
                 }
             }
         }

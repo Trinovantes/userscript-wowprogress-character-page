@@ -1,5 +1,5 @@
 <template>
-    <div class="warcraftlogs">
+    <div class="warcraftlogs-container">
         <h1>
             <a
                 :href="`https://www.warcraftlogs.com/character/${region}/${realm}/${characterName}`"
@@ -32,7 +32,7 @@
             <a
                 class="btn"
                 title="This will attempt to refresh all of the data"
-                @click="resetAccessToken"
+                @click="refresh"
             >
                 Refresh
             </a>
@@ -72,8 +72,9 @@ export default defineComponent({
         const errorMessage = computed(() => store.errorMessage)
         const accessToken = computed(() => store.accessToken)
 
-        const resetAccessToken = async() => {
+        const refresh = async() => {
             await store.resetAccessToken()
+            await store.authenticate()
         }
 
         const resetEverything = async() => {
@@ -89,122 +90,39 @@ export default defineComponent({
             errorMessage,
             accessToken,
 
-            resetAccessToken,
+            refresh,
             resetEverything,
         }
     },
 })
 </script>
 
-<style lang="scss">
-.warcraftlogs{
+<style lang="scss" scoped>
+.warcraftlogs-container{
     border: $border;
+    display: grid;
+    gap: $padding;
     padding: $padding;
+}
 
-    h1,
-    h2,
-    p,
-    ul,
-    form,
-    label,
-    .btn,
-    .notice,
-    .btn-group,
-    .raid-ranking{
-        margin: $padding 0;
+h1{
+    line-height: $padding * 2;
 
-        &:first-child{
-            margin-top: 0;
-        }
-        &:last-child{
-            margin-bottom: 0;
-        }
-    }
-
-    h1{
-        margin: 0;
-        margin: $padding 0;
-        line-height: $padding * 2;
-
-        a{
-            display: block;
-            overflow: hidden;
-
-            &:hover{
-                text-decoration: none;
-            }
-
-            img{
-                display: block;
-                float: left;
-                margin-right: 10px;
-                width: $padding * 2;
-                height: $padding * 2;
-            }
-        }
-    }
-
-    .notice{
-        color: white;
+    a{
         display: block;
-        padding: $padding;
-
-        &.warning{
-            background: black;
-        }
-        &.error{
-            background: #300a0e;
-        }
-    }
-
-    form{
-        label{
-            align-items: center;
-            display: grid;
-            grid-template-columns: 1fr 5fr;
-
-            input{
-                padding: math.div($padding, 2)
-            }
-        }
-    }
-
-    .btn{
-        background: #333;
-        border: $border;
-        color: white;
-        cursor: pointer;
-        display: block;
-        padding: math.div($padding, 2) $padding;
-        transition: 0.25s;
+        font-size: 1.5rem;
+        overflow: hidden;
 
         &:hover{
-            background: #222;
+            text-decoration: none;
         }
 
-        &.active{
-            border-color: white;
-            background: #111;
-        }
-    }
-
-    .btn-group{
-        display: flex;
-        gap: $padding;
-
-        a.btn{
-            flex: 1;
-            margin: 0;
-        }
-    }
-
-    .raid{
-        border: $border;
-        padding: $padding;
-
-        h2{
-            margin: 0;
-            margin-bottom: math.div($padding, 2);
+        img{
+            display: block;
+            float: left;
+            margin-right: 10px;
+            width: $padding * 2;
+            height: $padding * 2;
         }
     }
 }

@@ -79,3 +79,20 @@ export default defineComponent({
     },
 })
 </script>
+
+<style lang="scss" scoped>
+form{
+    display: grid;
+    gap: $padding;
+
+    label{
+        align-items: center;
+        display: grid;
+        grid-template-columns: 1fr 5fr;
+
+        input{
+            padding: math.div($padding, 2)
+        }
+    }
+}
+</style>
