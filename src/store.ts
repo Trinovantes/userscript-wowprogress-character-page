@@ -2,7 +2,7 @@ import { InjectionKey } from 'vue'
 import { createStore as _createStore, Store, useStore, MutationTree, ActionTree, CommitOptions, DispatchOptions, ActionContext } from 'vuex'
 import { Difficulty, Metric, DEFAULT_DIFFICULTY, DEFAULT_METRIC } from './Constants'
 import { authenticate, fetchCharacterData, OptionalFilters, CharacterData } from './WarcraftLogsV2'
-import { sleep } from './utils'
+import { sleep } from './utils/sleep'
 
 const KEY_WCL_CLIENT_ID = 'KEY_WCL_CLIENT_ID'
 const KEY_WCL_CLIENT_SECRET = 'KEY_WCL_CLIENT_SECRET'

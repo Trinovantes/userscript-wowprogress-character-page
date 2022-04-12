@@ -105,7 +105,7 @@
                         </td>
                         <td>
                             <span v-if="bossRank.totalKills > 0">
-                                {{ formatNum(bossRank.bestAmount) }}
+                                {{ formatNumber(bossRank.bestAmount) }}
                             </span>
                             <span
                                 v-else
@@ -116,7 +116,7 @@
                             <span
                                 v-if="bossRank.allStars && bossRank.allStars.possiblePoints > 0"
                             >
-                                {{ formatNum(bossRank.allStars.points) }}
+                                {{ formatNumber(bossRank.allStars.points) }}
                             </span>
                             <span
                                 v-else
@@ -126,9 +126,9 @@
                         <td>
                             <span
                                 v-if="bossRank.allStars && bossRank.allStars.possiblePoints > 0"
-                                :style="{ color: getRankColor(bossRank.allStars.rankPercent) }"
+                                :style="{ color: getParseRankColor(bossRank.allStars.rankPercent) }"
                             >
-                                {{ formatNum(bossRank.allStars.rank) }}
+                                {{ formatNumber(bossRank.allStars.rank) }}
                             </span>
                             <span
                                 v-else
@@ -138,7 +138,7 @@
                         <td>
                             <span
                                 v-if="bossRank.totalKills > 0"
-                                :style="{ color: getRankColor(bossRank.rankPercent) }"
+                                :style="{ color: getParseRankColor(bossRank.rankPercent) }"
                             >
                                 {{ formatPercent(bossRank.rankPercent / 100) }}
                             </span>
@@ -150,7 +150,7 @@
                         <td>
                             <span
                                 v-if="bossRank.totalKills > 0"
-                                :style="{ color: getRankColor(bossRank.medianPercent) }"
+                                :style="{ color: getParseRankColor(bossRank.medianPercent) }"
                             >
                                 {{ formatPercent(bossRank.medianPercent / 100) }}
                             </span>
@@ -163,7 +163,7 @@
                             <span
                                 v-if="bossRank.totalKills > 0"
                             >
-                                {{ formatNum(bossRank.totalKills) }}
+                                {{ formatNumber(bossRank.totalKills) }}
                             </span>
                             <span
                                 v-else
@@ -182,7 +182,9 @@ import { computed, defineComponent, onMounted, ref, watch } from 'vue'
 import { specs, Metric, Tier, getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
 import { TierInfo, OptionalFilters } from '@/WarcraftLogsV2'
 import { Action, Mutation, useTypedStore } from '@/store'
-import { formatPercent, formatNum, getRankColor } from '@/utils'
+import { formatPercent } from '@/utils/formatPercent'
+import { formatNumber } from '@/utils/formatNumber'
+import { getParseRankColor } from '@/utils/getParseRankColor'
 
 export default defineComponent({
     setup() {
@@ -242,7 +244,7 @@ export default defineComponent({
         })
 
         const characterTierInfos = computed(() => {
-            const tierInfos: { [key in Tier]?: TierInfo } = {}
+            const tierInfos: Partial<Record<Tier, TierInfo>> = {}
 
             if (characterData.value) {
                 for (const [tier, tierInfo] of Object.entries(characterData.value)) {
@@ -339,8 +341,8 @@ export default defineComponent({
             Difficulty,
 
             formatPercent,
-            formatNum,
-            getRankColor,
+            formatNumber,
+            getParseRankColor,
         }
     },
 })
