@@ -6,6 +6,8 @@ import { useStore } from '@/store'
 import { formatPercent } from '@/utils/formatPercent'
 import { formatNumber } from '@/utils/formatNumber'
 import { getParseRankColor } from '@/utils/getParseRankColor'
+import { getIconsSpec } from '@/utils/getIconsSpec'
+import { getIconsBoss } from '@/utils/getIconsBoss'
 
 export default defineComponent({
     setup() {
@@ -87,7 +89,7 @@ export default defineComponent({
             return `${numBossesKilled}/${numBosses}${getDifficultyShortName(difficultyFilter.value)}`
         }
 
-        const bossIcons = getBossIcons()
+        const bossIcons = getIconsBoss()
         const getBossIcon = (tier: Tier, encounterId: number): string | undefined => {
             const filename = `${tier}/${encounterId}.jpg`
             if (!(filename in bossIcons)) {
@@ -98,7 +100,7 @@ export default defineComponent({
             return bossIcons[filename]
         }
 
-        const specIcons = getSpecIcons()
+        const specIcons = getIconsSpec()
         const getSpecIcon = (specName: string): string | undefined => {
             if (playerClassId.value === undefined) {
                 console.warn(DEFINE.NAME, 'Missing player class')
@@ -149,28 +151,6 @@ export default defineComponent({
         }
     },
 })
-
-function getBossIcons() {
-    const imgReq = require.context('@/assets/img/bosses', true, /(\d+)\/.*\.(jpe?g|png|gif|svg)$/i)
-    const images: Record<string, string> = {}
-
-    for (const filename of imgReq.keys()) {
-        images[filename.replace('./', '')] = imgReq(filename) as string
-    }
-
-    return images
-}
-
-function getSpecIcons() {
-    const imgReq = require.context('@/assets/img/specs', false, /\.(jpe?g|png|gif|svg)$/i)
-    const images: Record<string, string> = {}
-
-    for (const filename of imgReq.keys()) {
-        images[filename.replace('./', '')] = imgReq(filename) as string
-    }
-
-    return images
-}
 </script>
 
 <template>
