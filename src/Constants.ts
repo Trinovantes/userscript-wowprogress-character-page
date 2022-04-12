@@ -13,6 +13,7 @@ export enum Tier {
     // SL
     T26 = 'T26',
     T28 = 'T28',
+    T29 = 'T29',
 }
 
 export function getTierName(tier: Tier): string {
@@ -27,6 +28,7 @@ export function getTierName(tier: Tier): string {
         // BfA
         case Tier.T26: return 'Castle Nathria'
         case Tier.T28: return 'Sanctum of Domination'
+        case Tier.T29: return 'Sepulcher of the First Ones '
 
         default: {
             return 'Unknown Tier'
@@ -35,6 +37,7 @@ export function getTierName(tier: Tier): string {
 }
 
 export const CURRENT_TIERS = [
+    Tier.T29,
     Tier.T28,
     Tier.T26,
 ]
