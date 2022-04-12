@@ -4,16 +4,16 @@
 
 export enum Tier {
     // BfA
-    T20 = 'T20',
-    T21 = 'T21',
-    T22 = 'T22',
-    T23 = 'T23',
-    T24 = 'T24',
+    T20 = '20',
+    T21 = '21',
+    T22 = '22',
+    T23 = '23',
+    T24 = '24',
 
     // SL
-    T26 = 'T26',
-    T28 = 'T28',
-    T29 = 'T29',
+    T26 = '26',
+    T28 = '28',
+    T29 = '29',
 }
 
 export function getTierName(tier: Tier): string {

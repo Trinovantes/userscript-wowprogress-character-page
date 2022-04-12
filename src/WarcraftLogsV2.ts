@@ -49,16 +49,16 @@ export interface BossRank {
 }
 
 export interface TierInfo {
+    zone: Tier
     metric: Metric
     partition: number
-    zone: number
     rankings: Array<BossRank>
 }
 
 export type CharacterData = {
     classID: number
 } & {
-    [key in Tier]?: TierInfo | { error: string }
+    [key in `T${Tier}`]?: TierInfo | { error: string }
 }
 
 interface CharacterRankingsResponse {
@@ -126,15 +126,8 @@ export async function authenticate(clientId: string, clientSecret: string): Prom
 
 export async function fetchCharacterData(accessToken: string, region: Region, realm: string, name: string, optionalFilters?: OptionalFilters): Promise<CharacterData | undefined> {
     let zoneRankingQueryString = ''
-    for (const zoneKey of CURRENT_TIERS) {
-        const re = /^T(\d+)$/
-        const matches = re.exec(zoneKey)
-        if (!matches) {
-            continue
-        }
-
-        const zoneId = parseInt(matches[1])
-        zoneRankingQueryString += `${zoneKey}: zoneRankings(`
+    for (const zoneId of CURRENT_TIERS) {
+        zoneRankingQueryString += `T${zoneId}: zoneRankings(`
         zoneRankingQueryString += `zoneID: ${zoneId}`
 
         if (optionalFilters?.metric) {
