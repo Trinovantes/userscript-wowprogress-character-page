@@ -1,18 +1,3 @@
-<template>
-    <div class="userscript-wowprogress-character-page">
-        <WarcraftLogsContainer />
-
-        <div class="credit">
-            <a
-                :href="projectUrl"
-                :title="title"
-            >
-                {{ title }}
-            </a>
-        </div>
-    </div>
-</template>
-
 <script lang="ts">
 import { defineComponent } from 'vue'
 import WarcraftLogsContainer from './WarcraftLogsContainer.vue'
@@ -30,6 +15,21 @@ export default defineComponent({
     },
 })
 </script>
+
+<template>
+    <div class="userscript-wowprogress-character-page">
+        <WarcraftLogsContainer />
+
+        <div class="credit">
+            <a
+                :href="projectUrl"
+                :title="title"
+            >
+                {{ title }}
+            </a>
+        </div>
+    </div>
+</template>
 
 <style lang="scss">
 .userscript-wowprogress-character-page{

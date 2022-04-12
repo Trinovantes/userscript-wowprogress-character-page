@@ -1,3 +1,178 @@
+<script lang="ts">
+import { computed, defineComponent, ref, watch } from 'vue'
+import { specs, Metric, Tier, getTierName as _getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
+import { TierInfo, OptionalFilters, CharacterData } from '@/WarcraftLogsV2'
+import { useStore } from '@/store'
+import { formatPercent } from '@/utils/formatPercent'
+import { formatNumber } from '@/utils/formatNumber'
+import { getParseRankColor } from '@/utils/getParseRankColor'
+
+export default defineComponent({
+    setup() {
+        const store = useStore()
+        const isLoading = computed(() => store.isLoading)
+        const hasErrors = computed(() => store.errorMessage)
+
+        const characterData = ref<CharacterData | undefined>(undefined)
+        const specFilter = ref<string>('')
+        const metricFilter = computed({
+            get: () => store.metricFilter,
+            set: (val) => { store.metricFilter = val },
+        })
+        const difficultyFilter = computed({
+            get: () => store.difficultyFilter,
+            set: (val) => { store.difficultyFilter = val },
+        })
+
+        watch([
+            specFilter,
+            metricFilter,
+            difficultyFilter,
+        ], async(newValues, oldValues) => {
+            const optionalFilters: OptionalFilters = {
+                specName: specFilter.value,
+                metric: metricFilter.value,
+                difficulty: difficultyFilter.value,
+            }
+
+            if (newValues.length > 0 && newValues.length === oldValues.length) {
+                await store.save()
+            }
+
+            characterData.value = await store.fetchCharacterData(optionalFilters)
+        }, {
+            immediate: true,
+        })
+
+        const characterTierInfos = computed(() => {
+            const tierInfos: Record<string, TierInfo> = {}
+
+            for (const [tierName, tierInfo] of Object.entries(characterData.value ?? {})) {
+                if (!(typeof tierInfo === 'object')) {
+                    continue
+                }
+
+                if ('error' in tierInfo) {
+                    console.warn(tierName, tierInfo.error)
+                    continue
+                }
+
+                tierInfos[tierName] = tierInfo
+            }
+
+            return tierInfos
+        })
+
+        const getTierName = (tierName: string): string => {
+            const matches = /^T(\d+)$/.exec(tierName)
+            if (!matches) {
+                return 'Unknown Tier Name'
+            }
+
+            const tier = matches[1] as Tier
+            return _getTierName(tier)
+        }
+
+        const getRaidProgress = (tierName: string): string => {
+            const tierInfos = characterTierInfos.value[tierName]
+            const numBosses = tierInfos.rankings.length
+            let numBossesKilled = 0
+
+            for (const bossRank of tierInfos.rankings) {
+                if (bossRank.totalKills > 0) {
+                    numBossesKilled += 1
+                }
+            }
+
+            return `${numBossesKilled}/${numBosses}${getDifficultyShortName(difficultyFilter.value)}`
+        }
+
+        const bossIcons = getBossIcons()
+        const getBossIcon = (tier: Tier, encounterId: number): string | undefined => {
+            const filename = `${tier}/${encounterId}.jpg`
+            if (!(filename in bossIcons)) {
+                console.warn(DEFINE.NAME, `Missing ${filename}`)
+                return
+            }
+
+            return bossIcons[filename]
+        }
+
+        const specIcons = getSpecIcons()
+        const getSpecIcon = (specName: string): string | undefined => {
+            if (playerClassId.value === undefined) {
+                console.warn(DEFINE.NAME, 'Missing player class')
+                return
+            }
+
+            const playerClassName = getClassName(playerClassId.value)
+            const filename = `${playerClassName}-${specName}.jpg`.toLowerCase()
+            if (!(filename in specIcons)) {
+                console.warn(DEFINE.NAME, `Missing ${filename}`)
+                return
+            }
+
+            return specIcons[filename]
+        }
+
+        const playerClassId = computed(() => characterData.value?.classID)
+        const playerSpecs = computed(() => {
+            if (playerClassId.value === undefined) {
+                return []
+            }
+
+            return specs[getClassName(playerClassId.value)]
+        })
+
+        return {
+            isLoading,
+            hasErrors,
+
+            getTierName,
+            getRaidProgress,
+            getBossIcon,
+            getSpecIcon,
+
+            playerSpecs,
+            specFilter,
+            metricFilter,
+            difficultyFilter,
+            characterTierInfos,
+
+            Tier,
+            Metric,
+            Difficulty,
+
+            formatPercent,
+            formatNumber,
+            getParseRankColor,
+        }
+    },
+})
+
+function getBossIcons() {
+    const imgReq = require.context('@/assets/img/bosses', true, /(\d+)\/.*\.(jpe?g|png|gif|svg)$/i)
+    const images: Record<string, string> = {}
+
+    for (const filename of imgReq.keys()) {
+        images[filename.replace('./', '')] = imgReq(filename) as string
+    }
+
+    return images
+}
+
+function getSpecIcons() {
+    const imgReq = require.context('@/assets/img/specs', false, /\.(jpe?g|png|gif|svg)$/i)
+    const images: Record<string, string> = {}
+
+    for (const filename of imgReq.keys()) {
+        images[filename.replace('./', '')] = imgReq(filename) as string
+    }
+
+    return images
+}
+</script>
+
 <template>
     <div
         v-if="!isLoading && !hasErrors"
@@ -181,178 +356,6 @@
         </div>
     </div>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue'
-import { specs, Metric, Tier, getTierName as _getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
-import { TierInfo, OptionalFilters, CharacterData } from '@/WarcraftLogsV2'
-import { useStore } from '@/store'
-import { formatPercent } from '@/utils/formatPercent'
-import { formatNumber } from '@/utils/formatNumber'
-import { getParseRankColor } from '@/utils/getParseRankColor'
-
-export default defineComponent({
-    setup() {
-        const store = useStore()
-        const isLoading = computed(() => store.isLoading)
-        const hasErrors = computed(() => store.errorMessage)
-
-        const characterData = ref<CharacterData | undefined>(undefined)
-        const specFilter = ref<string>('')
-        const metricFilter = computed({
-            get: () => store.metricFilter,
-            set: (val) => { store.metricFilter = val },
-        })
-        const difficultyFilter = computed({
-            get: () => store.difficultyFilter,
-            set: (val) => { store.difficultyFilter = val },
-        })
-
-        watch([
-            specFilter,
-            metricFilter,
-            difficultyFilter,
-        ], async() => {
-            const optionalFilters: OptionalFilters = {
-                specName: specFilter.value,
-                metric: metricFilter.value,
-                difficulty: difficultyFilter.value,
-            }
-
-            await store.save()
-            characterData.value = await store.fetchCharacterData(optionalFilters)
-        }, {
-            immediate: true,
-        })
-
-        const characterTierInfos = computed(() => {
-            const tierInfos: Record<string, TierInfo> = {}
-
-            for (const [tierName, tierInfo] of Object.entries(characterData.value ?? {})) {
-                if (!(typeof tierInfo === 'object')) {
-                    continue
-                }
-
-                if ('error' in tierInfo) {
-                    console.warn(tierName, tierInfo.error)
-                    continue
-                }
-
-                tierInfos[tierName] = tierInfo
-            }
-
-            return tierInfos
-        })
-
-        const getTierName = (tierName: string): string => {
-            const matches = /^T(\d+)$/.exec(tierName)
-            if (!matches) {
-                return 'Unknown Tier Name'
-            }
-
-            const tier = matches[1] as Tier
-            return _getTierName(tier)
-        }
-
-        const getRaidProgress = (tierName: string): string => {
-            const tierInfos = characterTierInfos.value[tierName]
-            const numBosses = tierInfos.rankings.length
-            let numBossesKilled = 0
-
-            for (const bossRank of tierInfos.rankings) {
-                if (bossRank.totalKills > 0) {
-                    numBossesKilled += 1
-                }
-            }
-
-            return `${numBossesKilled}/${numBosses}${getDifficultyShortName(difficultyFilter.value)}`
-        }
-
-        const bossIcons = getBossIcons()
-        const getBossIcon = (tier: Tier, encounterId: number): string | undefined => {
-            const filename = `${tier}/${encounterId}.jpg`
-            if (!(filename in bossIcons)) {
-                console.warn(DEFINE.NAME, `Missing ${filename}`)
-                return
-            }
-
-            return bossIcons[filename]
-        }
-
-        const specIcons = getSpecIcons()
-        const getSpecIcon = (specName: string): string | undefined => {
-            if (playerClassId.value === undefined) {
-                console.warn(DEFINE.NAME, 'Missing player class')
-                return
-            }
-
-            const playerClassName = getClassName(playerClassId.value)
-            const filename = `${playerClassName}-${specName}.jpg`.toLowerCase()
-            if (!(filename in specIcons)) {
-                console.warn(DEFINE.NAME, `Missing ${filename}`)
-                return
-            }
-
-            return specIcons[filename]
-        }
-
-        const playerClassId = computed(() => characterData.value?.classID)
-        const playerSpecs = computed(() => {
-            if (playerClassId.value === undefined) {
-                return []
-            }
-
-            return specs[getClassName(playerClassId.value)]
-        })
-
-        return {
-            isLoading,
-            hasErrors,
-
-            getTierName,
-            getRaidProgress,
-            getBossIcon,
-            getSpecIcon,
-
-            playerSpecs,
-            specFilter,
-            metricFilter,
-            difficultyFilter,
-            characterTierInfos,
-
-            Tier,
-            Metric,
-            Difficulty,
-
-            formatPercent,
-            formatNumber,
-            getParseRankColor,
-        }
-    },
-})
-
-function getBossIcons() {
-    const imgReq = require.context('@/assets/img/bosses', true, /(\d+)\/.*\.(jpe?g|png|gif|svg)$/i)
-    const images: Record<string, string> = {}
-
-    for (const filename of imgReq.keys()) {
-        images[filename.replace('./', '')] = imgReq(filename) as string
-    }
-
-    return images
-}
-
-function getSpecIcons() {
-    const imgReq = require.context('@/assets/img/specs', false, /\.(jpe?g|png|gif|svg)$/i)
-    const images: Record<string, string> = {}
-
-    for (const filename of imgReq.keys()) {
-        images[filename.replace('./', '')] = imgReq(filename) as string
-    }
-
-    return images
-}
-</script>
 
 <style lang="scss" scoped>
 .raid-rankings{

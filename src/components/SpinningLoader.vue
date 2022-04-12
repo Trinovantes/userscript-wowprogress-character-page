@@ -4,14 +4,6 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-    // nop
-})
-</script>
-
 <style lang="scss" scoped>
 .loader {
     border-radius: 50%;

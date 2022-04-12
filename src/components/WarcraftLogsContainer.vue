@@ -1,3 +1,53 @@
+<script lang="ts">
+import { computed, defineComponent, onMounted } from 'vue'
+import SpinningLoader from './SpinningLoader.vue'
+import WarcraftLogsAuth from './WarcraftLogsAuth.vue'
+import WarcraftLogsRaidRankings from './WarcraftLogsRaidRankings.vue'
+import { useStore, region, realm, characterName } from '@/store'
+
+export default defineComponent({
+    components: {
+        SpinningLoader,
+        WarcraftLogsAuth,
+        WarcraftLogsRaidRankings,
+    },
+
+    setup() {
+        const store = useStore()
+        const isLoading = computed(() => store.isLoading)
+        const errorMessage = computed(() => store.errorMessage)
+        const accessToken = computed(() => store.accessToken)
+
+        onMounted(async() => {
+            await store.load()
+            await store.authenticate()
+        })
+
+        const refresh = async() => {
+            await store.resetAccessToken()
+            await store.authenticate()
+        }
+
+        const resetEverything = async() => {
+            await store.resetEverything()
+        }
+
+        return {
+            region,
+            realm,
+            characterName,
+
+            isLoading,
+            errorMessage,
+            accessToken,
+
+            refresh,
+            resetEverything,
+        }
+    },
+})
+</script>
+
 <template>
     <div class="warcraftlogs-container">
         <h1>
@@ -46,56 +96,6 @@
         </div>
     </div>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue'
-import SpinningLoader from './SpinningLoader.vue'
-import WarcraftLogsAuth from './WarcraftLogsAuth.vue'
-import WarcraftLogsRaidRankings from './WarcraftLogsRaidRankings.vue'
-import { useStore, region, realm, characterName } from '@/store'
-
-export default defineComponent({
-    components: {
-        SpinningLoader,
-        WarcraftLogsAuth,
-        WarcraftLogsRaidRankings,
-    },
-
-    setup() {
-        const store = useStore()
-        onMounted(async() => {
-            await store.load()
-            await store.authenticate()
-        })
-
-        const isLoading = computed(() => store.isLoading)
-        const errorMessage = computed(() => store.errorMessage)
-        const accessToken = computed(() => store.accessToken)
-
-        const refresh = async() => {
-            await store.resetAccessToken()
-            await store.authenticate()
-        }
-
-        const resetEverything = async() => {
-            await store.resetEverything()
-        }
-
-        return {
-            region,
-            realm,
-            characterName,
-
-            isLoading,
-            errorMessage,
-            accessToken,
-
-            refresh,
-            resetEverything,
-        }
-    },
-})
-</script>
 
 <style lang="scss" scoped>
 .warcraftlogs-container{

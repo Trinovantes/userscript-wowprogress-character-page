@@ -1,3 +1,43 @@
+<script lang="ts">
+import { useStore } from '@/store'
+import { computed, defineComponent } from 'vue'
+
+export default defineComponent({
+    setup() {
+        const store = useStore()
+
+        const clientId = computed({
+            get() {
+                return store.clientId
+            },
+            set(val: string) {
+                store.clientId = val.trim()
+            },
+        })
+
+        const clientSecret = computed({
+            get() {
+                return store.clientSecret
+            },
+            set(val: string) {
+                store.clientSecret = val.trim()
+            },
+        })
+
+        const onSubmit = async(event: Event) => {
+            event.preventDefault()
+            await store.authenticate()
+        }
+
+        return {
+            clientId,
+            clientSecret,
+            onSubmit,
+        }
+    },
+})
+</script>
+
 <template>
     <form
         @submit="onSubmit"
@@ -39,46 +79,6 @@
         </button>
     </form>
 </template>
-
-<script lang="ts">
-import { useStore } from '@/store'
-import { computed, defineComponent } from 'vue'
-
-export default defineComponent({
-    setup() {
-        const store = useStore()
-
-        const clientId = computed({
-            get() {
-                return store.clientId
-            },
-            set(val: string) {
-                store.clientId = val.trim()
-            },
-        })
-
-        const clientSecret = computed({
-            get() {
-                return store.clientSecret
-            },
-            set(val: string) {
-                store.clientSecret = val.trim()
-            },
-        })
-
-        const onSubmit = async(event: Event) => {
-            event.preventDefault()
-            await store.authenticate()
-        }
-
-        return {
-            clientId,
-            clientSecret,
-            onSubmit,
-        }
-    },
-})
-</script>
 
 <style lang="scss" scoped>
 form{
