@@ -12,15 +12,15 @@ When I used to recruit for a World of Warcraft raiding guild, I was vetting play
     * [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) (Firefox)
     * [Tampermonkey](https://www.tampermonkey.net/) (Chrome, Firefox, Safari, Edge)
 
-2. [Download the latest build](https://github.com/Trinovantes/userscript-wowprogress-character-page/releases/download/latest/userscript-wowprogress-character-page.user.js). If you have Greasemonkey or Tampermonkey installed, then you should immediately be prompted with a confirmation window asking you if you wish to install this Userscript.
+2. [Download the latest build](https://github.com/Trinovantes/userscript-wowprogress-character-page/releases/latest/download/userscript-wowprogress-character-page.user.js). If you have Greasemonkey or Tampermonkey installed, then you should immediately be prompted with a confirmation window asking you if you wish to install this Userscript.
 
-3. Register a Warcraft Logs v2 API key (https://www.warcraftlogs.com/api/clients/). 
+3. Register a Warcraft Logs v2 API key (https://www.warcraftlogs.com/api/clients/).
 
     * The name field can be whatever you want but I suggest using a descriptive name to help the Warcraft Logs developers to identify your usage
     * The redirect URL doesn't matter for our purpose so it can just be any valid URL (e.g. `https://www.wowprogress.com`)
     * Do not enable public client
     * Once successful, the site should give you a client id and secret
-    
+
 4. Open a new tab to WoWProgress and navigate to any character page. You will be asked to enter your client id and secret that you obtained in the previous step.
 
 ## Dev Guide
@@ -32,7 +32,7 @@ When I used to recruit for a World of Warcraft raiding guild, I was vetting play
     * Tampermonkey on Chrome
 
 2. In Chrome:
-    
+
     * Go to `chrome://extensions/`
     * Go into Tampermonkey's details
     * Enable `Allow access to file URLs`
