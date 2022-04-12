@@ -2,13 +2,16 @@
     <WarcraftLogsContainer />
 
     <div class="credit">
-        <a :href="projectUrl">
+        <a
+            :href="projectUrl"
+            :title="title"
+        >
             {{ title }}
         </a>
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
 import WarcraftLogsContainer from './WarcraftLogsContainer.vue'
 
