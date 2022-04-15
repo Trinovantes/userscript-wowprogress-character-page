@@ -12,7 +12,7 @@ When I used to recruit for a World of Warcraft raiding guild, I was vetting play
     * [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) (Firefox)
     * [Tampermonkey](https://www.tampermonkey.net/) (Chrome, Firefox, Safari, Edge)
 
-2. [Download the latest build](https://github.com/Trinovantes/userscript-wowprogress-character-page/releases/latest/download/userscript-wowprogress-character-page.user.js). If you have Greasemonkey or Tampermonkey installed, then you should immediately be prompted with a confirmation window asking you if you wish to install this Userscript.
+2. [Download the latest build](https://github.com/Trinovantes/userscript-wowprogress-character-page/releases/download/latest/userscript-wowprogress-character-page.user.js). If you have Greasemonkey or Tampermonkey installed, then you should immediately be prompted with a confirmation window asking you if you wish to install this Userscript.
 
 3. Register a Warcraft Logs v2 API key (https://www.warcraftlogs.com/api/clients/).
 
