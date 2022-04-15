@@ -6,6 +6,7 @@ import packageJson from './package.json'
 import url from 'url'
 import { EOL } from 'os'
 import 'webpack-dev-server'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 
 const isDev = (process.env.NODE_ENV === 'development')
 const srcDir = path.resolve(__dirname, 'src')
@@ -110,6 +111,9 @@ const config: webpack.Configuration = {
             'DEFINE.REPO': JSON.stringify(packageJson.repository),
         }),
         new VueLoaderPlugin(),
+        new HtmlWebpackPlugin({
+            inject: false,
+        }),
         new WebpackUserscript({
             headers: {
                 name: packageJson.productName,
