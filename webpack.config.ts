@@ -36,9 +36,6 @@ const config: webpack.Configuration = {
     mode: isDev
         ? 'development'
         : 'production',
-    devtool: isDev
-        ? 'inline-source-map'
-        : false,
 
     entry: path.resolve(srcDir, 'main.ts'),
     output: {
