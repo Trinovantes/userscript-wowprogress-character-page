@@ -3,11 +3,11 @@ import { computed, defineComponent, ref, watch } from 'vue'
 import { specs, Metric, Tier, getTierName as _getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
 import { TierInfo, OptionalFilters, CharacterData } from '@/services/WarcraftLogsV2'
 import { useStore } from '@/store'
-import { formatPercent } from '@/utils/formatPercent'
 import { formatNumber } from '@/utils/formatNumber'
-import { getParseRankColor } from '@/utils/getParseRankColor'
-import { getIconsSpec } from '@/utils/getIconsSpec'
+import { formatPercent } from '@/utils/formatPercent'
 import { getIconsBoss } from '@/utils/getIconsBoss'
+import { getIconsSpec } from '@/utils/getIconsSpec'
+import { getParseRankColor } from '@/utils/getParseRankColor'
 
 export default defineComponent({
     setup() {

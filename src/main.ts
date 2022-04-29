@@ -1,7 +1,7 @@
-import './assets/css/main.scss'
-import { createApp } from 'vue'
-import UserscriptApp from './components/UserscriptApp.vue'
 import { createPinia } from 'pinia'
+import { createApp } from 'vue'
+import './assets/css/main.scss'
+import UserscriptApp from './components/UserscriptApp.vue'
 import { characterName, realm, region } from './store'
 
 function parseCharacterInfo() {

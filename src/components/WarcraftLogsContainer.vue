@@ -1,9 +1,9 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted } from 'vue'
+import { useStore, region, realm, characterName } from '@/store'
 import SpinningLoader from './SpinningLoader.vue'
 import WarcraftLogsAuth from './WarcraftLogsAuth.vue'
 import WarcraftLogsRaidRankings from './WarcraftLogsRaidRankings.vue'
-import { useStore, region, realm, characterName } from '@/store'
 
 export default defineComponent({
     components: {
