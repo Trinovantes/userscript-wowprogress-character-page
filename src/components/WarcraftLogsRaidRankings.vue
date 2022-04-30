@@ -1,7 +1,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue'
 import { specs, Metric, Tier, getTierName as _getTierName, Difficulty, getClassName, getDifficultyShortName } from '@/Constants'
-import { TierInfo, OptionalFilters, CharacterData } from '@/services/WarcraftLogsV2'
+import type { TierInfo, OptionalFilters, CharacterData } from '@/services/WarcraftLogsV2'
 import { useStore } from '@/store'
 import { formatNumber } from '@/utils/formatNumber'
 import { formatPercent } from '@/utils/formatPercent'
