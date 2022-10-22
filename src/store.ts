@@ -13,7 +13,7 @@ const KEY_FILTER_DIFFICULTY = 'KEY_FILTER_DIFFICULTY'
 // State
 // ----------------------------------------------------------------------------
 
-export interface State {
+export type State = {
     isLoading: boolean
     errorMessage: string
 

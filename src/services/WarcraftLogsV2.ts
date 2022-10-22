@@ -19,7 +19,7 @@ type ErrorResponse = {
     }>
 }
 
-interface SuccessResponse {
+type SuccessResponse = {
     // eslint-disable-next-line camelcase
     access_token: string
 }
@@ -30,7 +30,7 @@ export type OptionalFilters = Partial<{
     difficulty: Difficulty
 }>
 
-export interface BossRank {
+export type BossRank = {
     encounter: {
         id: number
         name: string
@@ -48,7 +48,7 @@ export interface BossRank {
     }
 }
 
-export interface TierInfo {
+export type TierInfo = {
     zone: Tier
     metric: Metric
     partition: number
@@ -61,7 +61,7 @@ export type CharacterData = {
     [key in `T${Tier}`]?: TierInfo | { error: string }
 }
 
-interface CharacterRankingsResponse {
+type CharacterRankingsResponse = {
     data?: {
         characterData?: {
             character?: CharacterData

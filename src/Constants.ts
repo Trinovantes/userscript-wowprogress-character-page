@@ -119,7 +119,7 @@ export function getClassName(classId: number): WowClass {
     }
 }
 
-export interface SpecInfo {
+export type SpecInfo = {
     name: string
     role: string
 }
