@@ -10,10 +10,13 @@ export enum Tier {
     T23 = '23',
     T24 = '24',
 
-    // SL
+    // Shadowlands
     T26 = '26',
     T28 = '28',
     T29 = '29',
+
+    // Dragonflight
+    T31 = '31',
 }
 
 export function getTierName(tier: Tier): string {
@@ -25,10 +28,13 @@ export function getTierName(tier: Tier): string {
         case Tier.T23: return 'Eternal Palance'
         case Tier.T24: return 'Nyalotha'
 
-        // BfA
+        // Shadowlands
         case Tier.T26: return 'Castle Nathria'
         case Tier.T28: return 'Sanctum of Domination'
         case Tier.T29: return 'Sepulcher of the First Ones '
+
+        // Dragonflight
+        case Tier.T31: return 'Vault of the Incarnates'
 
         default: {
             return 'Unknown Tier Name'
@@ -37,9 +43,7 @@ export function getTierName(tier: Tier): string {
 }
 
 export const CURRENT_TIERS = [
-    Tier.T29,
-    Tier.T28,
-    Tier.T26,
+    Tier.T31,
 ]
 
 export type Region = 'us' | 'eu'
@@ -97,6 +101,7 @@ export enum WowClass {
     Warlock = 'warlock',
     Warrior = 'warrior',
     DemonHunter = 'demonhunter',
+    Evoker = 'evoker',
 }
 
 export function getClassName(classId: number): WowClass {
@@ -113,6 +118,7 @@ export function getClassName(classId: number): WowClass {
         case 10: return WowClass.Warlock
         case 11: return WowClass.Warrior
         case 12: return WowClass.DemonHunter
+        case 13: return WowClass.Evoker
         default: {
             return WowClass.Unknown
         }
@@ -124,7 +130,7 @@ export type SpecInfo = {
     role: string
 }
 
-export const specs: { [key in WowClass]: Array<SpecInfo> } = {
+export const specs: Record<WowClass, Array<SpecInfo>> = {
     [WowClass.Unknown]: [],
     [WowClass.DeathKnight]: [
         {
@@ -292,6 +298,16 @@ export const specs: { [key in WowClass]: Array<SpecInfo> } = {
         {
             name: 'Protection',
             role: 'tank',
+        },
+    ],
+    [WowClass.Evoker]: [
+        {
+            name: 'Devastation',
+            role: 'rdps',
+        },
+        {
+            name: 'Preservation',
+            role: 'healder',
         },
     ],
 }
