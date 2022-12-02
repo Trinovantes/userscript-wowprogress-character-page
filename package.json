@@ -4,7 +4,7 @@
     "description": "Automatically embed WarcraftLogs inside each character's WoWProgress page",
     "author": "Stephen",
     "license": "AGPL-3.0-only",
-    "version": "2.4.1",
+    "version": "2.5.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/Trinovantes/userscript-wowprogress-character-page"
