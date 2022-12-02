@@ -307,7 +307,7 @@ export const specs: Record<WowClass, Array<SpecInfo>> = {
         },
         {
             name: 'Preservation',
-            role: 'healder',
+            role: 'healer',
         },
     ],
 }
