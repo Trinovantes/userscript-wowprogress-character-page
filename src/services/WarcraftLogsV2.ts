@@ -130,13 +130,13 @@ export async function fetchCharacterData(accessToken: string, region: Region, re
         zoneRankingQueryString += `T${zoneId}: zoneRankings(`
         zoneRankingQueryString += `zoneID: ${zoneId}`
 
-        if (optionalFilters?.metric) {
+        if (optionalFilters?.metric !== undefined) {
             zoneRankingQueryString += `, metric:${optionalFilters.metric}`
         }
-        if (optionalFilters?.specName) {
+        if (optionalFilters?.specName !== undefined) {
             zoneRankingQueryString += `, specName:"${optionalFilters.specName}"`
         }
-        if (optionalFilters?.difficulty) {
+        if (optionalFilters?.difficulty !== undefined) {
             zoneRankingQueryString += `, difficulty:${getDifficultyId(optionalFilters.difficulty)}`
         }
 
