@@ -2,16 +2,20 @@ import './assets/css/main.scss'
 import { createVueApp } from './createVueApp'
 
 async function main() {
-    await $.when($.ready)
+    const node = document.createElement('div')
+    node.id = DEFINE.NAME
 
-    const appContainerId = DEFINE.NAME
-    const $profile = $('.registeredTo')
-    $profile.before(`<div id="${appContainerId}" />`)
+    const mainEl = document.querySelector('#primary .primary')
+    mainEl?.insertBefore(node, document.querySelector('.registeredTo'))
 
     const app = await createVueApp()
-    app.mount(`#${appContainerId}`)
+    app.mount(node)
 }
 
-main().catch((err) => {
-    console.warn(DEFINE.NAME, err)
-})
+if (document.readyState !== 'loading') {
+    void main()
+} else {
+    window.addEventListener('DOMContentLoaded', () => {
+        void main()
+    })
+}

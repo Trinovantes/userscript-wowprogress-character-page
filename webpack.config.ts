@@ -36,6 +36,7 @@ const config: webpack.Configuration = {
     entry: {
         [packageJson.name]: path.resolve(srcDir, 'main.ts'),
     },
+
     output: {
         path: distDir,
     },
@@ -124,9 +125,6 @@ const config: webpack.Configuration = {
                     'GM.xmlHttpRequest',
                     'GM.getValue',
                     'GM.setValue',
-                ],
-                require: [
-                    'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
                 ],
             },
             ...(isDev

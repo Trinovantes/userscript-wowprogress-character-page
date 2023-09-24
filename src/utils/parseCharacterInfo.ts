@@ -1,7 +1,7 @@
 import { Region } from '@/services/Region'
 
 export function parseCharacterInfo() {
-    const href = $('a.armoryLink').attr('href')
+    const href = document.querySelector('a.armoryLink')?.getAttribute('href')
     if (!href) {
         throw new Error('Failed to parse page')
     }

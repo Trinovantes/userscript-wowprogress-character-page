@@ -3,9 +3,7 @@ import WarcraftLogs from './WarcraftLogs.vue'
 </script>
 
 <template>
-    <div
-        class="userscript-wowprogress-character-page"
-    >
+    <div class="userscript-wowprogress-character-page">
         <WarcraftLogs />
     </div>
 </template>
