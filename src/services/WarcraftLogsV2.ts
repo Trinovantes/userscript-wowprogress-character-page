@@ -52,7 +52,7 @@ export type BossRank = {
 }
 
 export type TierInfo = {
-    zone: Tier
+    zone: number
     metric: Metric
     partition: number
     rankings: Array<BossRank>

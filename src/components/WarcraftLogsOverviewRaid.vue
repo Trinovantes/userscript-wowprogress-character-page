@@ -2,12 +2,11 @@
 import { computed } from 'vue'
 import { formatNumber } from '@/utils/formatNumber'
 import { formatPercent } from '@/utils/formatPercent'
-import { getIconsBoss } from '@/utils/getIconsBoss'
-import { getIconsSpec } from '@/utils/getIconsSpec'
+import { getBossIcon } from '@/utils/getBossIcon'
+import { getSpecIcon } from '@/utils/getSpecIcon'
 import { getParseRankColor } from '@/utils/getParseRankColor'
 import { TierInfo } from '@/services/WarcraftLogsV2'
 import { Difficulty, getDifficultyShortName } from '@/services/Difficulty'
-import { Tier } from '@/services/Tier'
 import { Metric } from '@/services/Metric'
 
 const props = defineProps<{
@@ -30,26 +29,6 @@ const raidProgress = computed(() => {
 
     return `${numBossesKilled} / ${numBosses} ${getDifficultyShortName(props.difficultyFilter)}`
 })
-
-const bossIcons = getIconsBoss()
-const getBossIcon = (tier: Tier, encounterId: number): string | undefined => {
-    const filename = `${tier}/${encounterId}.jpg`
-    if (!(filename in bossIcons)) {
-        throw new Error(`Missing ${filename}`)
-    }
-
-    return bossIcons[filename]
-}
-
-const specIcons = getIconsSpec()
-const getSpecIcon = (specName: string): string | undefined => {
-    const filename = `${props.playerClassName}-${specName}.jpg`.toLowerCase()
-    if (!(filename in specIcons)) {
-        throw new Error(`Missing ${filename}`)
-    }
-
-    return specIcons[filename]
-}
 </script>
 
 <template>
@@ -104,7 +83,7 @@ const getSpecIcon = (specName: string): string | undefined => {
                     <td>
                         <img
                             v-if="bossRank.totalKills > 0"
-                            :src="getSpecIcon(bossRank.bestSpec)"
+                            :src="getSpecIcon(playerClassName, bossRank.bestSpec)"
                             class="wow-icon spec-icon"
                         >
                         <span
