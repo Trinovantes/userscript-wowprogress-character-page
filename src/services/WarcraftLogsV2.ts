@@ -1,4 +1,8 @@
-import { CURRENT_TIERS, Difficulty, getDifficultyId, Metric, Region, Tier } from '../Constants'
+import { CURRENT_TIERS } from '@/Constants'
+import { Difficulty } from './Difficulty'
+import { Metric } from './Metric'
+import { Region } from './Region'
+import { Tier } from './Tier'
 
 // ----------------------------------------------------------------------------
 // Constants
@@ -20,7 +24,6 @@ type ErrorResponse = {
 }
 
 type SuccessResponse = {
-    // eslint-disable-next-line camelcase
     access_token: string
 }
 
@@ -58,7 +61,7 @@ export type TierInfo = {
 export type CharacterData = {
     classID: number
 } & {
-    [key in `T${Tier}`]?: TierInfo | { error: string }
+    [key in Tier]?: TierInfo | { error: string }
 }
 
 type CharacterRankingsResponse = {
@@ -104,21 +107,22 @@ export async function authenticate(clientId: string, clientSecret: string): Prom
                         const errorResponse = response as ErrorResponse
                         const msg = `WarcraftLogs returned Status:${res.status} (${getWclErrorMessage(errorResponse)})`
                         console.warn(DEFINE.NAME, 'WarcraftLogsV2::authenticate::onload', msg, errorResponse)
-                        return reject(new Error(msg))
+                        reject(new Error(msg))
+                        return
                     }
 
                     const accessToken = response.access_token
-                    return resolve(accessToken)
+                    resolve(accessToken)
                 } catch (error) {
                     const msg = 'Failed to parse auth response from WarcraftLogs'
                     console.warn(DEFINE.NAME, 'WarcraftLogsV2::authenticate::onload', msg, error)
-                    return reject(new Error(msg))
+                    reject(new Error(msg))
                 }
             },
             onerror: (errorResponse) => {
                 const msg = `Failed fetch ${AUTH_ENDPOINT} (${errorResponse.responseText})`
                 console.warn(DEFINE.NAME, 'WarcraftLogsV2::authenticate::onerror', msg, errorResponse)
-                return reject(new Error(msg))
+                reject(new Error(msg))
             },
         })
     })
@@ -126,7 +130,12 @@ export async function authenticate(clientId: string, clientSecret: string): Prom
 
 export async function fetchCharacterData(accessToken: string, region: Region, realm: string, name: string, optionalFilters?: OptionalFilters): Promise<CharacterData | undefined> {
     let zoneRankingQueryString = ''
-    for (const zoneId of CURRENT_TIERS) {
+    for (const tier of CURRENT_TIERS) {
+        const zoneId = /T(\d+)/.exec(tier)?.[1]
+        if (!zoneId) {
+            continue
+        }
+
         zoneRankingQueryString += `T${zoneId}: zoneRankings(`
         zoneRankingQueryString += `zoneID: ${zoneId}`
 
@@ -137,7 +146,7 @@ export async function fetchCharacterData(accessToken: string, region: Region, re
             zoneRankingQueryString += `, specName:"${optionalFilters.specName}"`
         }
         if (optionalFilters?.difficulty !== undefined) {
-            zoneRankingQueryString += `, difficulty:${getDifficultyId(optionalFilters.difficulty)}`
+            zoneRankingQueryString += `, difficulty:${optionalFilters.difficulty}`
         }
 
         zoneRankingQueryString += ')'
@@ -154,7 +163,7 @@ export async function fetchCharacterData(accessToken: string, region: Region, re
 
     const query = JSON.stringify({ query: queryString })
     console.info(DEFINE.NAME, `Fetching from WarcraftLogs region:${region} realm:${realm} name:${name}`)
-    console.info(DEFINE.NAME, query)
+    console.info(DEFINE.NAME, queryString)
 
     return new Promise((resolve, reject) => {
         GM.xmlHttpRequest({
@@ -173,28 +182,30 @@ export async function fetchCharacterData(accessToken: string, region: Region, re
                         const errorResponse = response as ErrorResponse
                         const msg = `WarcraftLogs returned Status:${res.status} (${getWclErrorMessage(errorResponse)})`
                         console.warn(DEFINE.NAME, 'WarcraftLogsV2::authenticate::onload', msg, errorResponse)
-                        return reject(new Error(msg))
+                        reject(new Error(msg))
+                        return
                     }
 
                     const character = response?.data?.characterData?.character
                     if (!character) {
                         const msg = `WarcraftLogs returned invalid response (${res.responseText.substring(0, 80)})`
                         console.warn(DEFINE.NAME, 'WarcraftLogsV2::fetchRankings::onload', msg, character)
-                        return reject(new Error(msg))
+                        reject(new Error(msg))
+                        return
                     }
 
                     console.info(DEFINE.NAME, 'Received data from WarcraftLogs', character)
-                    return resolve(character)
+                    resolve(character)
                 } catch (error) {
                     const msg = 'Failed to parse ranking response from WarcraftLogs'
                     console.warn(DEFINE.NAME, 'WarcraftLogsV2::fetchRankings::onload', msg, error)
-                    return reject(new Error(msg))
+                    reject(new Error(msg))
                 }
             },
             onerror: (errorResponse) => {
                 const msg = `Failed fetch ${API_ENDPOINT} (${errorResponse.responseText})`
                 console.warn(DEFINE.NAME, 'WarcraftLogsV2::fetchRankings::onerror', msg, errorResponse)
-                return reject(new Error(msg))
+                reject(new Error(msg))
             },
         })
     })

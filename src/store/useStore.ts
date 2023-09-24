@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { Difficulty, Metric, DEFAULT_DIFFICULTY, DEFAULT_METRIC } from './Constants'
-import { authenticate, fetchCharacterData, CharacterData, OptionalFilters } from './services/WarcraftLogsV2'
+import { authenticate, fetchCharacterData, CharacterData, OptionalFilters } from '../services/WarcraftLogsV2'
+import { sleep } from '@/utils/sleep'
+import { parseCharacterInfo } from '@/utils/parseCharacterInfo'
+import { DEFAULT_METRIC, DEFAULT_DIFFICULTY } from '@/Constants'
+import { Difficulty } from '@/services/Difficulty'
+import { Metric } from '@/services/Metric'
+import { Region } from '@/services/Region'
 
 const KEY_WCL_CLIENT_ID = 'KEY_WCL_CLIENT_ID'
 const KEY_WCL_CLIENT_SECRET = 'KEY_WCL_CLIENT_SECRET'
@@ -14,26 +18,34 @@ const KEY_FILTER_DIFFICULTY = 'KEY_FILTER_DIFFICULTY'
 // ----------------------------------------------------------------------------
 
 export type State = {
+    // Per page load
     isLoading: boolean
-    errorMessage: string
+    errorMessage: string | null
+    characterName: string | null
+    realm: string | null
+    region: Region | null
 
+    // Persistent in userscript storage
     clientId: string
     clientSecret: string
     accessToken: string
-
     metricFilter: Metric
     difficultyFilter: Difficulty
 }
 
 function createDefaultState(): State {
+    const { characterName, realm, region } = parseCharacterInfo()
     const defaultState: State = {
         isLoading: false,
-        errorMessage: '',
+        errorMessage: null,
+
+        characterName,
+        realm,
+        region,
 
         clientId: '',
         clientSecret: '',
         accessToken: '',
-
         metricFilter: DEFAULT_METRIC,
         difficultyFilter: DEFAULT_DIFFICULTY,
     }
@@ -45,10 +57,6 @@ function createDefaultState(): State {
 // Store
 // ----------------------------------------------------------------------------
 
-export const region = ref('')
-export const realm = ref('')
-export const characterName = ref('')
-
 export const useStore = defineStore('Store', {
     state: createDefaultState,
 
@@ -58,19 +66,24 @@ export const useStore = defineStore('Store', {
                 await GM.getValue(KEY_WCL_CLIENT_ID, '') || '',
                 await GM.getValue(KEY_WCL_CLIENT_SECRET, '') || '',
                 await GM.getValue(KEY_WCL_ACCESS_TOKEN, '') || '',
-                await GM.getValue(KEY_FILTER_METRIC, '') || DEFAULT_METRIC,
-                await GM.getValue(KEY_FILTER_DIFFICULTY, '') || DEFAULT_DIFFICULTY,
+                await GM.getValue(KEY_FILTER_METRIC, DEFAULT_METRIC),
+                await GM.getValue(KEY_FILTER_DIFFICULTY, DEFAULT_DIFFICULTY),
             ])
-
-            console.info(DEFINE.NAME, 'Store::load', `clientId:${clientId.length} clientSecret:${clientSecret.length} accessToken:${accessToken.length} metricFilter:${metricFilter} difficultyFilter:${difficultyFilter}`)
 
             this.$patch({
                 clientId,
                 clientSecret,
                 accessToken,
-                metricFilter: metricFilter as Metric,
-                difficultyFilter: difficultyFilter as Difficulty,
+                metricFilter,
+                difficultyFilter,
             })
+
+            console.info(DEFINE.NAME, 'Store::load', `clientId:${clientId.length} clientSecret:${clientSecret.length} accessToken:${accessToken.length} metricFilter:${metricFilter} difficultyFilter:${difficultyFilter}`)
+
+            // If we stored clientId and clientSecret from previous session, try to authenticate with it
+            if (clientId && clientSecret) {
+                await this.authenticate()
+            }
         },
 
         async save() {
@@ -85,57 +98,69 @@ export const useStore = defineStore('Store', {
             ])
         },
 
-        async resetAccessToken() {
-            console.info(DEFINE.NAME, 'Store::resetAccessToken')
-            this.accessToken = ''
+        async resetAuth() {
+            console.info(DEFINE.NAME, 'Store::resetAuth')
+            this.$patch({
+                clientId: '',
+                clientSecret: '',
+                accessToken: '',
+            })
             await this.save()
         },
 
-        async resetEverything() {
-            console.info(DEFINE.NAME, 'Store::resetEverything')
+        async resetSettings() {
+            console.info(DEFINE.NAME, 'Store::resetSettings')
             this.$reset()
             await this.save()
         },
 
         async authenticate() {
-            try {
-                this.isLoading = true
-                this.errorMessage = ''
+            this.errorMessage = ''
+            this.isLoading = true
+            console.info(DEFINE.NAME, 'Store::authenticate')
 
+            try {
                 if (!this.clientId || !this.clientSecret) {
-                    throw new Error(`Missing clientId:${this.clientId} or clientSecret:${this.clientSecret}`)
+                    await sleep(250)
+                    throw new Error('Missing clientId and/or clientSecret')
                 }
 
                 const accessToken = await authenticate(this.clientId, this.clientSecret)
                 this.accessToken = accessToken
                 await this.save()
             } catch (err) {
-                const error = err as Error
-                this.errorMessage = error.message
-                console.warn(DEFINE.NAME, error)
-                await this.resetEverything()
+                this.errorMessage = (err as Error).message
+                await this.resetAuth()
             } finally {
                 this.isLoading = false
             }
         },
 
         async fetchCharacterData(optionalFilters?: OptionalFilters): Promise<CharacterData | undefined> {
+            this.errorMessage = ''
+            this.isLoading = true
+            console.info(DEFINE.NAME, 'Store::fetchCharacterData')
+
+            if (!this.region) {
+                this.errorMessage = `Invalid region:${this.region}`
+                return
+            }
+            if (!this.realm) {
+                this.errorMessage = `Invalid realm:${this.realm}`
+                return
+            }
+            if (!this.characterName) {
+                this.errorMessage = `Invalid characterName:${this.characterName}`
+                return
+            }
+
             let characterData: CharacterData | undefined
 
             try {
-                this.isLoading = true
-                this.errorMessage = ''
-
-                if (region.value !== 'us' && region.value !== 'eu') {
-                    throw new Error(`Unknown Region "${region.value}"`)
-                }
-
-                characterData = await fetchCharacterData(this.accessToken, region.value, realm.value, characterName.value, optionalFilters)
+                characterData = await fetchCharacterData(this.accessToken, this.region, this.realm, this.characterName, optionalFilters)
             } catch (err) {
-                const error = err as Error
-                this.errorMessage = error.message
-                console.warn(DEFINE.NAME, error)
-                await this.resetEverything()
+                this.errorMessage = (err as Error).message
+                await this.resetAuth()
             } finally {
                 this.isLoading = false
             }

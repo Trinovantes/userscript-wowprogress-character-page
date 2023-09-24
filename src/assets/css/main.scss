@@ -20,3 +20,93 @@
     --uncommon     : rgb(30,255,0);
     --common       : #666;
 }
+
+.userscript-wowprogress-character-page{
+     html, body, div, span, applet, object, iframe,
+     h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+     a, abbr, acronym, address, big, cite, code,
+     del, dfn, em, img, ins, kbd, q, s, samp,
+     small, strike, strong, sub, sup, tt, var,
+     b, u, i, center,
+     dl, dt, dd, ol, ul, li,
+     fieldset, form, label, legend,
+     table, caption, tbody, tfoot, thead, tr, th, td,
+     article, aside, canvas, details, embed,
+     figure, figcaption, footer, header, hgroup,
+     menu, nav, output, ruby, section, summary,
+     time, mark, audio, video{
+        background: none;
+        outline: none;
+        border: none;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+
+        color: white;
+        font-size: 15px;
+        font-weight: normal;
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 25px;
+        text-align: left;
+        vertical-align: baseline;
+    }
+
+    a{
+        color: white;
+        text-decoration: underline;
+
+        &:hover{
+            text-decoration: none;
+        }
+    }
+
+    .flex-hgap{
+        display: flex;
+        gap: $padding;
+    }
+
+    .flex-vgap{
+        display: flex;
+        flex-direction: column;
+        gap: $padding;
+    }
+
+    .flex-1{
+        flex: 1;
+    }
+
+    aside.notice{
+        @extend .flex-vgap;
+        padding: $padding;
+
+        ul{
+            padding-left: $padding;
+        }
+
+        &.warning{
+            background: black;
+        }
+        &.error{
+            background: #300a0e;
+        }
+    }
+
+    button.btn{
+        background: #333;
+        border: $border;
+        color: white;
+        cursor: pointer;
+        display: block;
+        padding: math.div($padding, 2) $padding;
+        transition: 0.25s;
+
+        &:hover{
+            background: #222;
+        }
+
+        &.active{
+            border-color: white;
+            background: #111;
+        }
+    }
+}
