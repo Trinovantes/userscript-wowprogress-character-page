@@ -13,6 +13,7 @@ export enum Tier {
 
     // Dragonflight
     T31 = 'T31',
+    T33 = 'T33',
 }
 
 export function getTierName(tier: Tier): string {
@@ -31,6 +32,7 @@ export function getTierName(tier: Tier): string {
 
         // Dragonflight
         case Tier.T31: return 'Vault of the Incarnates'
+        case Tier.T33: return 'Aberrus, the Shadowed Crucible'
 
         default: {
             return 'Unknown Tier Name'
