@@ -63,9 +63,9 @@ export const useStore = defineStore('Store', {
     actions: {
         async load() {
             const [clientId, clientSecret, accessToken, metricFilter, difficultyFilter] = await Promise.all([
-                await GM.getValue(KEY_WCL_CLIENT_ID, '') || '',
-                await GM.getValue(KEY_WCL_CLIENT_SECRET, '') || '',
-                await GM.getValue(KEY_WCL_ACCESS_TOKEN, '') || '',
+                await GM.getValue(KEY_WCL_CLIENT_ID, ''),
+                await GM.getValue(KEY_WCL_CLIENT_SECRET, ''),
+                await GM.getValue(KEY_WCL_ACCESS_TOKEN, ''),
                 await GM.getValue(KEY_FILTER_METRIC, DEFAULT_METRIC),
                 await GM.getValue(KEY_FILTER_DIFFICULTY, DEFAULT_DIFFICULTY),
             ])
