@@ -87,7 +87,7 @@ function getWclErrorMessage(errorResponse: ErrorResponse) {
 }
 
 export async function authenticate(clientId: string, clientSecret: string): Promise<string> {
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
         console.info(DEFINE.NAME, 'Fetching', AUTH_ENDPOINT)
         const basicAuth = btoa(`${clientId}:${clientSecret}`)
 
@@ -165,7 +165,7 @@ export async function fetchCharacterData(accessToken: string, region: Region, re
     console.info(DEFINE.NAME, `Fetching from WarcraftLogs region:${region} realm:${realm} name:${name}`)
     console.info(DEFINE.NAME, queryString)
 
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
         GM.xmlHttpRequest({
             method: 'POST',
             url: API_ENDPOINT,
