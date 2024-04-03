@@ -14,6 +14,7 @@ export enum Tier {
     // Dragonflight
     T31 = 'T31',
     T33 = 'T33',
+    T35 = 'T35',
 }
 
 export function getTierName(tier: Tier): string {
