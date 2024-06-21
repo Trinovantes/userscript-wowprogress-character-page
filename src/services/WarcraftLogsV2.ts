@@ -95,7 +95,7 @@ export async function authenticate(clientId: string, clientSecret: string): Prom
             method: 'POST',
             url: AUTH_ENDPOINT,
             headers: {
-                Authorization: `Basic ${basicAuth}`,
+                'Authorization': `Basic ${basicAuth}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: 'grant_type=client_credentials',
@@ -170,7 +170,7 @@ export async function fetchCharacterData(accessToken: string, region: Region, re
             method: 'POST',
             url: API_ENDPOINT,
             headers: {
-                Authorization: `Bearer ${accessToken}`,
+                'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
             },
             data: query,

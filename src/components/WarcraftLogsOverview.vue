@@ -11,12 +11,20 @@ import { Tier, getTierName } from '@/services/Tier'
 const store = useStore()
 const specFilter = ref<string>('')
 const metricFilter = computed<Metric>({
-    get: () => store.metricFilter,
-    set: (val) => { store.metricFilter = val },
+    get: () => {
+        return store.metricFilter
+    },
+    set: (val) => {
+        store.metricFilter = val
+    },
 })
 const difficultyFilter = computed<Difficulty>({
-    get: () => store.difficultyFilter,
-    set: (val) => { store.difficultyFilter = val },
+    get: () => {
+        return store.difficultyFilter
+    },
+    set: (val) => {
+        store.difficultyFilter = val
+    },
 })
 
 const characterData = ref<CharacterData | undefined>()
